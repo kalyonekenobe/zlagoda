@@ -61,10 +61,10 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<Category> GetCategoryByNumberAsync(int number)
 		{
-			string query = @"SELECT FROM Category WHERE category_number=@CategoryNumber";
+			string query = @"SELECT * FROM Category WHERE category_number=@CategoryNumber";
 			using (var connection = new SqlConnection(_connectionString))
 			{
-				var category = await connection.QueryFirstOrDefault(query, new
+				var category = await connection.QueryFirstOrDefaultAsync<Category>(query, new
 				{
 					CategoryNumber = number
 				});
@@ -78,17 +78,17 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<Category> UpdateCategoryAsync(Category category)
 		{
-			string query = @"UPDATE Category SET category_number=@CategoryNumber, category_name=@CategoryName";
+			string query = @"UPDATE Category SET category_name=@CategoryName WHERE category_number=@CategoryNumber";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				int affectedRows = await connection.ExecuteAsync(query, new
 				{
-					CategoryNumber = category.category_number,
 					CategoryName = category.category_name,
+					CategoryNumber = category.category_number,
 				});
 				if (affectedRows == 0)
 				{
-					throw new Exception("Category creation error!");
+					throw new Exception("Category updating error!");
 				}
 				return category;
 			}
