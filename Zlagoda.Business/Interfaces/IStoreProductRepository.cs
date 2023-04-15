@@ -9,10 +9,10 @@ namespace Zlagoda.Business.Interfaces
 		Task<StoreProduct> DeleteStoreProductAsync(StoreProduct storeProduct);
 		Task<IEnumerable<StoreProduct>> GetAllStoreProductsOrderedByNameAsync();
 		Task<IEnumerable<StoreProduct>> GetAllStoreProductsOrderedByQuantityAsync();
-		Task<object> GetStoreProductPriceQuantityNameAndCharacteristicsByUPCAsync(string upc);
+		Task<dynamic> GetStoreProductPriceQuantityNameAndCharacteristicsByUPCAsync(string upc);
 		Task<IEnumerable<StoreProduct>> GetAllPromotionalStoreProductsOrderedByQuantityThenByNameAsync();
 		Task<IEnumerable<StoreProduct>> GetAllNonPromotionalStoreProductsOrderedByQuantityThenByNameAsync();
-		Task<object> GetStoreProductPriceAndQuantityByUPCAsync(string upc);
+		Task<dynamic> GetStoreProductPriceAndQuantityByUPCAsync(string upc);
 		Task<StoreProduct> GetStoreProductByUPCAsync(string upc);
 	}
 }

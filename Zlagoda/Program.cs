@@ -1,7 +1,13 @@
+using Zlagoda.Business.Interfaces;
+using Zlagoda.Business.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("Default");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<ICategoryRepository, CategoryRepository>(_ => new CategoryRepository(connectionString));
+builder.Services.AddSingleton<IEmployeeRepository, EmployeeRepository>(_ => new EmployeeRepository(connectionString));
 
 var app = builder.Build();
 

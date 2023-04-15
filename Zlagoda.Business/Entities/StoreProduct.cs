@@ -8,5 +8,7 @@
 		public decimal selling_price { get; set; }
 		public int products_number { get; set; }
 		public bool promotional_product { get; set; }
+
+		public Product? product { get; set; } = null;
 	}
 }
