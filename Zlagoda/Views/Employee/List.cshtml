@@ -1,0 +1,112 @@
+﻿@using Zlagoda.Business.Entities;
+
+<style>
+    .btn {
+        border: 2px solid;
+        font-weight: 500;
+        width: 175px;
+    }
+
+    .table-responsive {
+        margin: 20px 0 40px 0;
+    }
+
+    .edit-delete-btn {
+        width: 50px;
+        height: 35px;
+        border: none;
+    }
+
+</style>
+<div class="container">
+    <div class="row justify-content-between">
+        <h2 style="text-align: center; margin-top: 30px;">Працівники</h2>
+
+        @{
+            var allEmployeesRouteData = new Dictionary<string, string>();
+            var cashiersEmployeesRouteData = new Dictionary<string, string>
+            {
+                {"show", "cashiers"}
+            };
+        }
+        <div class="col-4">
+            <!-- dropdown -->
+            <div class="dropdown">
+                <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    @(Context.Request.Query["show"] == "cashiers" ? "Касири" : "Усі працівники")
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" asp-all-route-data="allEmployeesRouteData">
+                            Усі працівники    
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" asp-all-route-data="cashiersEmployeesRouteData">
+                            Касири
+                        </a>    
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-6" style="text-align: end">
+            <!-- buttons -->
+            <a class="btn btn-outline-dark" asp-action="Create">Додати працівника</a>
+            <a class="btn btn-outline-dark" asp-action="Print">Друк працівників</a>
+        </div>
+
+    </div>
+
+
+    <!-- TABLE -->
+    @foreach (var error in Model.Errors)
+    {
+        @error
+    }
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+                <tr>
+                    <th scope="col" width="30" class="text-center">#</th>
+                    <th scope="col" width="200">ПІБ</th>
+                    <th scope="col" width="100">Посада</th>
+                    <th scope="col" width="100">Зарплата</th>
+                    <th scope="col" width="180">Дата початку роботи</th>
+                    <th scope="col" width="150">Дата народження</th>
+                    <th scope="col" width="150">Телефон</th>
+                    <th scope="col">Адреса</th>
+                    <th scope="col">Редагувати</th>
+                    <th scope="col">Видалити</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ var employeeNumber = 0; }
+                @foreach (Employee employee in Model.Employees)
+                {
+                    employeeNumber++;
+                    <tr>
+                        <td class="text-center">@employeeNumber</td>
+                        <td>@employee.empl_surname @employee.empl_name @employee.empl_patronymic</td>
+                        <td>@employee.empl_role</td>
+                        <td>@employee.salary.ToString("0.00")$</td>
+                        <td>@employee.date_of_start.ToString("dd/MM/yyyy")</td>
+                        <td>@employee.date_of_birth.ToString("dd/MM/yyyy")</td>
+                        <td>@employee.phone_number</td>
+                        <td>@employee.city, @employee.street, @employee.zip_code</td>
+                        <td class="text-center">
+                            <a class="btn btn-outline-dark edit-delete-btn" asp-action="Edit" asp-route-id="@employee.id_employee">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                        </td>
+                        <td class ="text-center">
+                            <a class="btn btn-outline-dark edit-delete-btn" asp-action="Delete" asp-route-id="@employee.id_employee">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

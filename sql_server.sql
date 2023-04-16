@@ -19,7 +19,7 @@ CREATE TABLE Employee (
     zip_code                VARCHAR(9) NOT NULL,
 
     PRIMARY KEY (id_employee),
-    CHECK (salary >= 0 AND empl_role IN('Cashier', 'Manager'))
+    CHECK (salary >= 0 AND DATEADD(YEAR, -18, GETDATE()) >= date_of_birth AND empl_role IN('Cashier', 'Manager'))
 );
 
 CREATE TABLE Customer_Card (

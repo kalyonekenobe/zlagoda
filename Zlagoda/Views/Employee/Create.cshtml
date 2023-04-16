@@ -1,0 +1,65 @@
+﻿<style>
+    .container {
+        width: 50%;
+        min-width: 600px;
+    }
+
+    h4 {
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    input {
+        border: 1px solid black !important;
+    }
+
+    .btn-outline-dark {
+        border: 2px solid;
+        font-weight: 500;
+        width: 150px;
+        margin: auto;
+        margin-top: 15px;
+    }
+</style>
+<div class="container">
+    <h4 class="mb-3">Додати працівника</h4>
+    <form method="POST" asp-action="Create" method="POST">
+        <div asp-validation-summary="All"></div>
+        <div class="row g-3">
+            <div class="col-sm-4">
+                <label for="empId" class="form-label">#id</label>
+                <input type="text" class="form-control" id="empId" name="empId" required>
+            </div>
+            <div class="col-sm-8">
+                <label for="name" class="form-label">ПІБ</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="col-12">
+                <label for="position" class="form-label">Посада</label>
+                <input type="text" class="form-control" id="position" name="position" required>
+            </div>
+            <div class="col-12">
+                <label for="salary" class="form-label">Зарплата</label>
+                <input type="number" class="form-control" id="salary" name="salary" required>
+            </div>
+            <div class="col-6">
+                <label for="startDate" class="form-label">Дата початку роботи</label>
+                <input type="date" class="form-control" id="startDate" name="startDate" required>
+            </div>
+            <div class="col-6">
+                <label for="birthDate" class="form-label">Дата народження</label>
+                <input type="date" class="form-control" id="birthDate" name="birthDate" required>
+            </div>
+            <div class="col-12">
+                <label for="phone" class="form-label">Контактний телефон</label>
+                <input type="tel" class="form-control" id="phone" name="phone" required>
+            </div>
+            <div class="col-12">
+                <label for="address" class="form-label">Адреса</label>
+                <input type="text" class="form-control" id="address" name="address" required>
+            </div>
+            <br>
+            <button class="btn btn-outline-dark" type="submit">Додати</button>
+        </div>
+    </form>
+</div>
