@@ -58,10 +58,12 @@
 
 
     <!-- TABLE -->
-    @foreach (var error in Model.Errors)
-    {
-        @error
-    }
+    <div class="error-list mt-3">
+        @foreach (var error in Model.Errors)
+        {
+            <span class="error">@error</span>
+        }
+    </div>
     <div class="table-responsive">
         <table class="table table-striped table-sm" id="employees-table">
             <thead>
