@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Zlagoda.Business.Interfaces;
+﻿using Zlagoda.Business.Interfaces;
 using Zlagoda.Models;
 
 namespace Zlagoda.Services
@@ -19,7 +18,7 @@ namespace Zlagoda.Services
         {
             var employee = await _employeeRepository.GetEmployeeByIdAsync(employeeId);
             password = _passwordService.Encrypt(password);
-            if (employee is null || !_passwordService.ComparePasswords(password, employee.empl_password))
+            if (employee is null || employee.empl_password is null || !_passwordService.ComparePasswords(password, employee.empl_password))
             {
                 throw new Exception("Wrong employee id or password!");
             }

@@ -1,4 +1,9 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Write your JavaScript code.
+﻿let printEmployeesButton = document.getElementById("print-employees");
+if (printEmployeesButton) {
+    printEmployeesButton.onclick = event => {
+        let employeesTable = document.getElementById("employees-table");
+        if (employeesTable) {
+            window.print();
+        }
+    }
+}

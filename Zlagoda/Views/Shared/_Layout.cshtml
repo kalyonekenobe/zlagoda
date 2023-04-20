@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Zlagoda.Services;
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -50,9 +52,13 @@
                     </div>
                 </div>
                 <div class="additional-buttons d-flex justify-content-end align-items-center" style="min-width: 320px;">
-                    @if (Model.GetType().GetProperty("User") is not null)
+                    @{
+                        var user = ClaimsService.GetUserFromClaims(Context.User);
+                        if (Context.User.Claims.Count() == 0)
+                            user = null;
+                    }
+                    @if (user is not null)
                     {
-                        var user = Model.User as User;
                         var lastName = user?.empl_surname;
                         var firstName = $"{user?.empl_name?.First()}.";
                         var middleName = $"{user?.empl_patronymic?.First()}.";

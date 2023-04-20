@@ -52,6 +52,10 @@ namespace Zlagoda.Controllers
         {
             try
             {
+                if (ClaimsService.GetUserFromClaims(User).id_employee == id)
+                {
+                    throw new Exception("You cannot delete yourself from the employees list. Ask other managers to do it!");
+                }
                 await _employeeRepository.DeleteEmployeeAsync(new Employee { id_employee = id });
             }
             catch (Exception exception)
@@ -88,7 +92,10 @@ namespace Zlagoda.Controllers
                 {
                     return View("Create", model);
                 }
-                model.Employee.empl_password = _passwordService.Encrypt(model.Employee.empl_password);
+                if (model.Employee.empl_password is not null)
+                {
+                    model.Employee.empl_password = _passwordService.Encrypt(model.Employee.empl_password);
+                }
                 await _employeeRepository.CreateEmployeeAsync(model.Employee);
                 return RedirectToAction("Index");
             }

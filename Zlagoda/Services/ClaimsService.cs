@@ -19,7 +19,12 @@ namespace Zlagoda.Services
             foreach (PropertyInfo prop in user.GetType().GetProperties())
             {
 				var converter = TypeDescriptor.GetConverter(prop.PropertyType);
-                prop.SetValue(user, converter.ConvertFromString(GetClaim(principal, prop.Name)?.ToString() ?? string.Empty), null);
+				var claim = GetClaim(principal, prop.Name);
+                if (claim is not null)
+				{
+					string value = claim.ToString()!;
+					prop.SetValue(user, converter.ConvertFromString(value), null);
+				}
 			}
             return user;
         } 

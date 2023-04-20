@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using Zlagoda.Attributes;
-using Zlagoda.Business.Interfaces;
-using Zlagoda.Enums;
 using Zlagoda.Services;
 
 namespace Zlagoda.Controllers
@@ -17,12 +14,12 @@ namespace Zlagoda.Controllers
 		[JwtAuthorize]
 		public IActionResult Index()
 		{
-			var model = new
+			var user = ClaimsService.GetUserFromClaims(User);
+            var model = new
 			{
 				Title = "Homepage",
-				User = ClaimsService.GetUserFromClaims(User),
 			};
-			return View($"{model.User.empl_role}Index", model);
+			return View($"{user.empl_role}Index", model);
 		}
 	}
 }

@@ -8,6 +8,22 @@ html {
   }
 }
 
+@media only print {
+    header, footer, a, h1, h2, h3, h4, h5, h6, #employees-table .actions, .btn, .dropdown {
+        display: none;
+    }
+    .container, table {
+        width: 100%;
+        max-width: 100000px !important;
+    }
+    #employees-table td:last-child,
+    #employees-table td:nth-last-child(-1), 
+    #employees-table th:last-child, 
+    #employees-table th:nth-child(-1) {
+        width: 0;
+    }
+}
+
 html {
   position: relative;
   min-height: 100%;

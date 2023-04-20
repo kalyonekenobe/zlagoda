@@ -16,12 +16,10 @@
         height: 35px;
         border: none;
     }
-
 </style>
 <div class="container">
     <div class="row justify-content-between">
         <h2 style="text-align: center; margin-top: 30px;">Працівники</h2>
-
         @{
             var allEmployeesRouteData = new Dictionary<string, string>();
             var cashiersEmployeesRouteData = new Dictionary<string, string>
@@ -53,7 +51,7 @@
         <div class="col-6" style="text-align: end">
             <!-- buttons -->
             <a class="btn btn-outline-dark page-buttons" asp-action="Create">Додати працівника</a>
-            <a class="btn btn-outline-dark page-buttons" asp-action="Print">Друк працівників</a>
+            <a class="btn btn-outline-dark page-buttons" id="print-employees">Друк працівників</a>
         </div>
 
     </div>
@@ -65,7 +63,7 @@
         @error
     }
     <div class="table-responsive">
-        <table class="table table-striped table-sm">
+        <table class="table table-striped table-sm" id="employees-table">
             <thead>
                 <tr>
                     <th scope="col" width="30" class="text-center">#</th>
@@ -76,8 +74,8 @@
                     <th scope="col" width="150">Дата народження</th>
                     <th scope="col" width="150">Телефон</th>
                     <th scope="col">Адреса</th>
-                    <th scope="col">Редагувати</th>
-                    <th scope="col">Видалити</th>
+                    <th scope="col" class="actions">Редагувати</th>
+                    <th scope="col" class="actions">Видалити</th>
                 </tr>
             </thead>
             <tbody>
@@ -94,12 +92,12 @@
                         <td>@employee.date_of_birth.ToString("dd/MM/yyyy")</td>
                         <td>@employee.phone_number</td>
                         <td>@employee.city, @employee.street, @employee.zip_code</td>
-                        <td class="text-center">
+                        <td class="text-center actions">
                             <a class="btn btn-outline-dark edit-delete-btn" asp-action="Edit" asp-route-id="@employee.id_employee">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </a>
                         </td>
-                        <td class ="text-center">
+                        <td class="text-center actions">
                             <a class="btn btn-outline-dark edit-delete-btn" asp-action="Delete" asp-route-id="@employee.id_employee">
                                 <i class="fa-solid fa-trash"></i>
                             </a>
