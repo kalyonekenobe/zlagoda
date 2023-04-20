@@ -1,12 +1,16 @@
-﻿let printEmployeesButton = document.getElementById("print-employees");
-if (printEmployeesButton) {
-    printEmployeesButton.onclick = event => {
-        let employeesTable = document.getElementById("employees-table");
-        if (employeesTable) {
-            window.print();
+﻿let modelsToPrint = ['employees', 'categories'];
+
+modelsToPrint.forEach(modelName => {
+    let printButton = document.getElementById(`print-${modelName}`);
+    if (printButton) {
+        printButton.onclick = event => {
+            let table = document.getElementById(`${modelName}-table`);
+            if (table) {
+                window.print();
+            }
         }
     }
-}
+});
 
 let closeErrorButtons = document.querySelectorAll(".error .close");
 closeErrorButtons.forEach(button => button.onclick = event => {

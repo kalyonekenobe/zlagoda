@@ -40,7 +40,6 @@ namespace Zlagoda.Business.Repositories
 				int affectedRows = await connection.ExecuteAsync(query, new
 				{
 					CategoryNumber = category.category_number,
-					CategoryName = category.category_name,
 				});
 				if (affectedRows == 0)
 				{

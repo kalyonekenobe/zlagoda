@@ -9,17 +9,17 @@ html {
 }
 
 @media only print {
-    header, footer, a, h1, h2, h3, h4, h5, h6, #employees-table .actions, .btn, .dropdown {
-        display: none;
+    header, footer, h1, h2, h3, h4, h5, h6, .noprint, a, .dropdown {
+        display: none !important;
     }
     .container, table {
         width: 100%;
         max-width: 100000px !important;
     }
-    #employees-table td:last-child,
-    #employees-table td:nth-last-child(-1), 
-    #employees-table th:last-child, 
-    #employees-table th:nth-child(-1) {
+    .printable td:last-child,
+    .printable td:nth-last-child(-1),
+    .printable th:last-child,
+    .printable th:nth-child(-1) {
         width: 0;
     }
 }
