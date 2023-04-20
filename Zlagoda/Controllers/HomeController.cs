@@ -9,23 +9,17 @@ namespace Zlagoda.Controllers
 {
 	public class HomeController : Controller
 	{
-		private readonly ICategoryRepository _categoryRepository;
-
-		public HomeController(ICategoryRepository categoryRepository)
-		{
-			_categoryRepository = categoryRepository;
-		}
+		public HomeController() { }
 
 		[HttpGet]
 		[Route("")]
 		[Route("home")]
 		[JwtAuthorize]
-		public async Task<IActionResult> Index()
+		public IActionResult Index()
 		{
 			var model = new
 			{
-				Title = "Categories list",
-				Categories = await _categoryRepository.GetAllCategoriesOrderedByNameAsync(),
+				Title = "Homepage",
 				User = ClaimsService.GetUserFromClaims(User),
 			};
 			return View($"{model.User.empl_role}Index", model);
