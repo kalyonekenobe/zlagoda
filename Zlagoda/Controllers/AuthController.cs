@@ -61,5 +61,13 @@ namespace Zlagoda.Controllers
                 return RedirectToAction("Index");
             }
         }
-    }
+
+		[HttpGet]
+		[Route("logout")]
+		public IActionResult Logout()
+		{
+			Response.Cookies.Delete("X-Access-Token");
+			return RedirectToAction("Index");
+		}
+	}
 }

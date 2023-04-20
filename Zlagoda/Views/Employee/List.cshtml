@@ -1,7 +1,7 @@
 ﻿@using Zlagoda.Business.Entities;
 
 <style>
-    .btn {
+    .page-buttons {
         border: 2px solid;
         font-weight: 500;
         width: 175px;
@@ -32,7 +32,7 @@
         <div class="col-4">
             <!-- dropdown -->
             <div class="dropdown">
-                <button class="btn btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-outline-dark dropdown-toggle page-buttons" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     @(Context.Request.Query["show"] == "cashiers" ? "Касири" : "Усі працівники")
                 </button>
                 <ul class="dropdown-menu">
@@ -52,8 +52,8 @@
 
         <div class="col-6" style="text-align: end">
             <!-- buttons -->
-            <a class="btn btn-outline-dark" asp-action="Create">Додати працівника</a>
-            <a class="btn btn-outline-dark" asp-action="Print">Друк працівників</a>
+            <a class="btn btn-outline-dark page-buttons" asp-action="Create">Додати працівника</a>
+            <a class="btn btn-outline-dark page-buttons" asp-action="Print">Друк працівників</a>
         </div>
 
     </div>

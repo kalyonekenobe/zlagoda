@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Zlagoda.Attributes;
 using Zlagoda.Business.Entities;
 using Zlagoda.Business.Interfaces;
+using Zlagoda.Enums;
 using Zlagoda.Models;
 using Zlagoda.Services;
 
@@ -20,7 +22,8 @@ namespace Zlagoda.Controllers
         [HttpGet]
         [Route("employees")]
         [Route("employees/list")]
-        public async Task<IActionResult> Index([FromQuery(Name = "show")] string show = "")
+		[JwtAuthorize(Role = nameof(UserRoles.Manager))]
+		public async Task<IActionResult> Index([FromQuery(Name = "show")] string show = "")
         {
             IEnumerable<Employee> employees;
             if (show == "cashiers")
@@ -44,7 +47,8 @@ namespace Zlagoda.Controllers
 
         [HttpGet]
         [Route("employees/delete/{id}")]
-        public async Task<IActionResult> Delete(string id)
+		[JwtAuthorize(Role = nameof(UserRoles.Manager))]
+		public async Task<IActionResult> Delete(string id)
         {
             try
             {
@@ -62,7 +66,8 @@ namespace Zlagoda.Controllers
 
         [HttpGet]
         [Route("employees/create")]
-        public IActionResult Create()
+		[JwtAuthorize(Role = nameof(UserRoles.Manager))]
+		public IActionResult Create()
         {
             var model = new CreateEmployeeViewModel
             {
@@ -74,7 +79,8 @@ namespace Zlagoda.Controllers
 
         [HttpPost]
         [Route("employees/create")]
-        public async Task<IActionResult> Create(CreateEmployeeViewModel model)
+		[JwtAuthorize(Role = nameof(UserRoles.Manager))]
+		public async Task<IActionResult> Create(CreateEmployeeViewModel model)
         {
             try
             {
@@ -95,7 +101,8 @@ namespace Zlagoda.Controllers
 
         [HttpGet]
         [Route("employees/edit/{id}")]
-        public async Task<IActionResult> Edit(string id)
+		[JwtAuthorize(Role = nameof(UserRoles.Manager))]
+		public async Task<IActionResult> Edit(string id)
         {
             try
             {
@@ -119,7 +126,8 @@ namespace Zlagoda.Controllers
 
         [HttpPost]
         [Route("employees/edit/{id}")]
-        public async Task<IActionResult> Edit(EditEmployeeViewModel model)
+		[JwtAuthorize(Role = nameof(UserRoles.Manager))]
+		public async Task<IActionResult> Edit(EditEmployeeViewModel model)
         {
             try
             {
@@ -127,7 +135,10 @@ namespace Zlagoda.Controllers
                 {
                     return View("Edit", model);
                 }
-                model.Employee.empl_password = _passwordService.Encrypt(model.Employee.empl_password);
+                if (model.Employee.empl_password is not null)
+                {
+                    model.Employee.empl_password = _passwordService.Encrypt(model.Employee.empl_password);
+                }
                 await _employeeRepository.UpdateEmployeeAsync(model.Employee);
                 return RedirectToAction("Index");
             }

@@ -141,8 +141,9 @@ namespace Zlagoda.Business.Repositories
 
         public async Task<Employee> UpdateEmployeeAsync(Employee employee)
         {
-            string query = @"UPDATE Employee 
-                             SET empl_password=@EmplPassword, empl_surname=@EmplSurname, 
+            string changePassword = employee.empl_password is not null ? "empl_password=@EmplPassword," : string.Empty;
+            string query = $@"UPDATE Employee 
+                             SET {changePassword} empl_surname=@EmplSurname, 
                              empl_name=@EmplName, empl_patronymic=@EmplPatronymic, 
                              empl_role=@EmplRole, salary=@Salary, date_of_birth=@DateOfBirth, 
                              date_of_start=@DateOfStart, phone_number=@PhoneNumber, 
