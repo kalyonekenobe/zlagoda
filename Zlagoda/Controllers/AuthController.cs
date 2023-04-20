@@ -12,7 +12,7 @@ namespace Zlagoda.Controllers
 
         public AuthController(IEmployeeRepository employeeRepository, IHttpContextAccessor httpContextAccessor)
         {
-            _authService = new AuthService(employeeRepository, httpContextAccessor);
+            _authService = new AuthService(employeeRepository);
             _httpContextAccessor = httpContextAccessor; 
         }
 
@@ -20,7 +20,12 @@ namespace Zlagoda.Controllers
         [Route("auth")]
         public IActionResult Index()
         {
-            var model = new AuthViewModel
+			var xAccessToken = Request.Cookies["X-Access-Token"] ?? string.Empty;
+			if (JwtTokenService.ValidateJwtToken(xAccessToken))
+            { 			
+				return RedirectToAction("Index", "Home");
+			}
+			var model = new AuthViewModel
             {
                 Title = "Authorization",
                 Errors = TempData["Errors"] ?? new List<string>(),
@@ -32,15 +37,19 @@ namespace Zlagoda.Controllers
         [Route("auth")]
         public async Task<IActionResult> Authenticate(AuthViewModel model)
         {
-            var jwtToken = Request.Cookies["token"] ?? string.Empty;
-            if (JwtTokenService.ValidateJwtToken(jwtToken)) 
-            {
-                return RedirectToAction("Index", "Home");
-            }
             try
             {
                 var token = await _authService.SignIn(model.IdEmployee, model.Password);
-                _httpContextAccessor.HttpContext?.Response.Cookies.Append("token", token);
+                var cookies = _httpContextAccessor.HttpContext?.Response.Cookies;
+                if (cookies is null)
+                {
+                    throw new Exception("Authenication failed!");
+                }
+                cookies.Append("X-Access-Token", token, new CookieOptions
+                {
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.Strict
+                });
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception exception) 

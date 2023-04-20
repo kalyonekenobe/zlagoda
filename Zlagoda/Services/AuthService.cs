@@ -1,4 +1,5 @@
-﻿using Zlagoda.Business.Interfaces;
+﻿using System.Security.Claims;
+using Zlagoda.Business.Interfaces;
 using Zlagoda.Models;
 
 namespace Zlagoda.Services
@@ -8,9 +9,8 @@ namespace Zlagoda.Services
         private readonly IEmployeeRepository _employeeRepository;
         private readonly PasswordService _passwordService;
 
-		public AuthService(IEmployeeRepository employeeRepository, IHttpContextAccessor httpContextAccessor) 
+		public AuthService(IEmployeeRepository employeeRepository) 
         {
-            JwtTokenService.HttpContextObject = httpContextAccessor;
             _employeeRepository = employeeRepository;
             _passwordService = new PasswordService();
         }
@@ -23,7 +23,8 @@ namespace Zlagoda.Services
             {
                 throw new Exception("Wrong employee id or password!");
             }
-            var token = JwtTokenService.GenerateRefreshToken(new User(employee));
+            var user = new User(employee);
+            var token = JwtTokenService.GenerateRefreshToken(user);
             return token;
         }
     }

@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Text;
 using Zlagoda.Business.Interfaces;
 using Zlagoda.Business.Repositories;
-using Zlagoda.Models;
 using Zlagoda.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,7 +33,12 @@ builder.Services.AddCors(builder => {
 
 JwtTokenService.Configuration = builder.Configuration;
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+builder.Services.AddAuthentication(options =>
+{
+	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+	options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+	options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -50,6 +54,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     options.RequireHttpsMetadata = false;
     options.SaveToken = true;
 });
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 

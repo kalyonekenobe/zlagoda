@@ -9,11 +9,9 @@ namespace Zlagoda.Services
     public static class JwtTokenService
     {
         public static IConfiguration Configuration { get; set; } = null!;
-        public static IHttpContextAccessor? HttpContextObject;
 
         public static string GenerateJwtToken(IEnumerable<Claim> claims, int tokenDurationInSeconds)
         {
-            HttpContextObject!.HttpContext!.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:secret"]));
             var credentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256Signature);
             var jwtSecurityToken = new JwtSecurityToken(
