@@ -17,11 +17,11 @@ namespace Zlagoda.Business.Repositories
         public async Task<Employee> CreateEmployeeAsync(Employee employee)
         {
             string query = @"INSERT INTO Employee 
-                             (id_employee, empl_surname, empl_name, empl_patronymic, 
+                             (id_employee, empl_password, empl_surname, empl_name, empl_patronymic, 
                               empl_role, salary, date_of_birth, date_of_start, phone_number, 
                               city, street, zip_code) 
                              VALUES 
-                             (@IdEmployee, @EmplSurname, @EmplName, @EmplPatronymic,
+                             (@IdEmployee, @EmplPassword, @EmplSurname, @EmplName, @EmplPatronymic,
                               @EmplRole, @Salary, @DateOfBirth, @DateOfStart, @PhoneNumber,
                               @City, @Street, @ZipCode)";
             using (var connection = new SqlConnection(_connectionString))
@@ -29,6 +29,7 @@ namespace Zlagoda.Business.Repositories
                 int affectedRows = await connection.ExecuteAsync(query, new
                 {
                     IdEmployee = employee.id_employee,
+                    EmplPassword = employee.empl_password,
                     EmplSurname = employee.empl_surname,
                     EmplName = employee.empl_name,
                     EmplPatronymic = employee.empl_patronymic,
@@ -41,6 +42,8 @@ namespace Zlagoda.Business.Repositories
                     Street = employee.street,
                     ZipCode = employee.zip_code,
                 });
+
+                employee.empl_password = string.Empty;
 
                 if (affectedRows == 0)
                 {
@@ -139,9 +142,9 @@ namespace Zlagoda.Business.Repositories
         public async Task<Employee> UpdateEmployeeAsync(Employee employee)
         {
             string query = @"UPDATE Employee 
-                             SET empl_surname=@EmplSurname, empl_name=@EmplName, 
-                             empl_patronymic=@EmplPatronymic, empl_role=@EmplRole, 
-                             salary=@Salary, date_of_birth=@DateOfBirth, 
+                             SET empl_password=@EmplPassword, empl_surname=@EmplSurname, 
+                             empl_name=@EmplName, empl_patronymic=@EmplPatronymic, 
+                             empl_role=@EmplRole, salary=@Salary, date_of_birth=@DateOfBirth, 
                              date_of_start=@DateOfStart, phone_number=@PhoneNumber, 
                              city=@City, street=@Street, zip_code=@ZipCode 
                              WHERE id_employee=@IdEmployee";
@@ -149,6 +152,7 @@ namespace Zlagoda.Business.Repositories
             {
                 int affectedRows = await connection.ExecuteAsync(query, new
                 {
+                    EmplPassword = employee.empl_password,
                     EmplSurname = employee.empl_surname,
                     EmplName = employee.empl_name,
                     EmplPatronymic = employee.empl_patronymic,
@@ -162,6 +166,8 @@ namespace Zlagoda.Business.Repositories
                     ZipCode = employee.zip_code,
                     IdEmployee = employee.id_employee,
                 });
+
+                employee.empl_password = string.Empty;
 
                 if (affectedRows == 0)
                 {

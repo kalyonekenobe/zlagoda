@@ -1,0 +1,35 @@
+﻿@model Zlagoda.Models.AuthViewModel
+
+<style>
+	header {
+		display: none;
+	}
+</style>
+<div class="container mt-5">
+	<div class="row justify-content-center align-items-center h-100" style="min-height: calc(100vh - 200px);">
+		<div class="col-md-6">
+			<div class="card">
+				<div class="card-header bg-dark text-white text-center p-3">
+					<h5 class="m-0">Вхід до системи ZLAGODA</h5>
+				</div>
+				<div class="card-body">
+					<form method="post" asp-action="Authenticate">
+						@foreach (var error in Model.Errors)
+						{
+							<span class="error">@error</span>
+						}
+						<div class="form-group">
+							<label asp-for="IdEmployee" class="mb-1">ID користувача:</label>
+							<input asp-for="IdEmployee" type="text" class="form-control" placeholder="Введіть ID користувача">
+						</div>
+						<div class="form-group mt-2">
+							<label asp-for="Password" class="mb-1">Пароль:</label>
+							<input asp-for="Password" type="password" class="form-control" placeholder="Введіть пароль">
+						</div>
+						<button type="submit" class="btn btn-dark btn-block mt-3 w-100">Увійти</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

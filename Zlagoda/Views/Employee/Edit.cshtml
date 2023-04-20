@@ -1,5 +1,5 @@
 ﻿@using Zlagoda.Business.Entities;
-@model Zlagoda.Models.CreateEmployeeViewModel
+@model Zlagoda.Models.EditEmployeeViewModel
 
 <style>
     .container {
@@ -12,7 +12,15 @@
     }
 
     input, select {
-        border: 1px solid black !important;
+        border: 1px solid silver !important;
+    }
+
+    input[readonly] {
+        border: 1px solid silver !important;
+        color: #333333;
+        background: rgba(0, 0, 0, 0.05) !important;
+        box-shadow: none !important;
+        outline: none !important;
     }
 
     .submit {
@@ -26,20 +34,24 @@
 <div class="container">
     <div class="row my-5">
         <div class="col d-flex justify-content-between align-items-center flex-nowrap">
-            <h4 class="text-start w-100">Додавання нового працівника</h4>
+            <h4 class="text-start w-100">Редагування працівника</h4>
             <a asp-action="Index" class="btn btn-secondary d-inline" style="max-width: 100px;">Назад</a>
         </div>
     </div>
-    <form method="POST" asp-action="Create" method="POST">
+    <form method="POST" asp-action="Edit" method="POST">
         @foreach (var error in Model.Errors)
         {
-            <span class="error">@error</span>       
+            <span class="error">@error</span>
         }
         <div asp-validation-summary="All"></div>
         <div class="row g-3">
             <div class="col-sm-12">
                 <label asp-for="Employee.id_employee" class="form-label">Ідентифікатор</label>
-                <input asp-for="Employee.id_employee" type="text" class="form-control" required>
+                <input asp-for="Employee.id_employee" type="text" class="form-control" required readonly>
+            </div>
+            <div class="col-sm-12">
+                <label asp-for="Employee.empl_password" class="form-label">Пароль</label>
+                <input asp-for="Employee.empl_password" type="password" class="form-control" required>
             </div>
             <div class="col-sm-4">
                 <label asp-for="Employee.empl_surname" class="form-label">Прізвище</label>
@@ -53,24 +65,24 @@
                 <label asp-for="Employee.empl_patronymic" class="form-label">По-батькові</label>
                 <input asp-for="Employee.empl_patronymic" type="text" class="form-control">
             </div>
-            <div class="col-12">
+            <div class="col-sm-6">
                 <label asp-for="Employee.empl_role" class="form-label">Посада</label>
                 <select asp-for="Employee.empl_role" class="form-select" required>
-                    <option value="Cashier" selected>Cashier</option>
+                    <option value="Cashier">Cashier</option>
                     <option value="Manager">Manager</option>
                 </select>
             </div>
-            <div class="col-12">
+            <div class="col-sm-6">
                 <label asp-for="Employee.salary" class="form-label">Зарплата</label>
-                <input asp-for="Employee.salary" min="0" step="0.5" type="number" class="form-control" required>
+                <input asp-for="Employee.salary" min="0" step=".01" type="number" class="form-control" required>
             </div>
             <div class="col-6">
                 <label asp-for="Employee.date_of_start" class="form-label">Дата початку роботи</label>
-                <input asp-for="Employee.date_of_start" type="date" value="@null" class="form-control" required>
+                <input asp-for="Employee.date_of_start" type="date" class="form-control" required>
             </div>
             <div class="col-6">
                 <label asp-for="Employee.date_of_birth" class="form-label">Дата народження</label>
-                <input asp-for="Employee.date_of_birth" type="date" value="@null" class="form-control" required>
+                <input asp-for="Employee.date_of_birth" type="date" class="form-control" required>
             </div>
             <div class="col-sm-12">
                 <label asp-for="Employee.phone_number" class="form-label">Контактний телефон</label>
@@ -90,7 +102,7 @@
             </div>
             <br>
             <div class="col-12">
-                <button class="btn btn-success submit" type="submit">Додати</button>
+                <button class="btn btn-primary submit" type="submit">Зберегти зміни</button>
             </div>
         </div>
     </form>
