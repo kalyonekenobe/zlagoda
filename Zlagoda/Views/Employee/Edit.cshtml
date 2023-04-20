@@ -2,9 +2,8 @@
 @model Zlagoda.Models.EditEmployeeViewModel
 
 <style>
-    .container {
-        width: 50%;
-        min-width: 600px;
+    .container.content {
+        width: 100%;
     }
 
     h4 {
@@ -31,17 +30,17 @@
         width: 100%;
     }
 </style>
-<div class="container">
-    <div class="row my-5">
+<div class="container content pt-4">
+    <div class="row mb-3 mt-2">
         <div class="col d-flex justify-content-between align-items-center flex-nowrap">
             <h4 class="text-start w-100">Редагування працівника</h4>
-            <a asp-action="Index" class="btn btn-secondary d-inline" style="max-width: 100px;">Назад</a>
+            <a asp-action="Index" class="btn btn-sm btn-secondary d-inline" style="min-width: 100px;">Назад</a>
         </div>
     </div>
     <form method="POST" asp-action="Edit" method="POST">
         @foreach (var error in Model.Errors)
         {
-            <span class="error">@error</span>
+            <span class="error">@error<i class="fa-solid fa-xmark close"></i></span>
         }
         <div asp-validation-summary="All"></div>
         <div class="row g-3">

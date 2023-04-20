@@ -16,7 +16,7 @@
 					<form method="post" asp-action="Authenticate">
 						@foreach (var error in Model.Errors)
 						{
-							<span class="error">@error</span>
+							<span class="error">@error<i class="fa-solid fa-xmark close"></i></span>
 						}
 						<div class="form-group">
 							<label asp-for="IdEmployee" class="mb-1">ID користувача:</label>

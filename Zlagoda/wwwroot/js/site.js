@@ -7,3 +7,9 @@ if (printEmployeesButton) {
         }
     }
 }
+
+let closeErrorButtons = document.querySelectorAll(".error .close");
+closeErrorButtons.forEach(button => button.onclick = event => {
+    let parent = button.parentElement;
+    parent.style.display = "none";
+});

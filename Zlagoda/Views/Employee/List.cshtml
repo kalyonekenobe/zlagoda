@@ -7,6 +7,10 @@
         width: 175px;
     }
 
+    h2 {
+        font-size: 1.5rem;
+    }
+
     .table-responsive {
         margin: 20px 0 40px 0;
     }
@@ -17,9 +21,15 @@
         border: none;
     }
 </style>
-<div class="container">
+<div class="container-fluid pt-4">
+    <div class="error-list mb-2">
+        @foreach (var error in Model.Errors)
+        {
+            <span class="error">@error<i class="fa-solid fa-xmark close"></i></span>
+        }
+    </div>
     <div class="row justify-content-between">
-        <h2 style="text-align: center; margin-top: 30px;">Працівники</h2>
+        <h2 class="text-left mb-3">Список працівників магазину</h2>
         @{
             var allEmployeesRouteData = new Dictionary<string, string>();
             var cashiersEmployeesRouteData = new Dictionary<string, string>
@@ -30,7 +40,7 @@
         <div class="col-4">
             <!-- dropdown -->
             <div class="dropdown">
-                <button class="btn btn-outline-dark dropdown-toggle page-buttons" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-sm btn-outline-dark dropdown-toggle page-buttons" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     @(Context.Request.Query["show"] == "cashiers" ? "Касири" : "Усі працівники")
                 </button>
                 <ul class="dropdown-menu">
@@ -50,31 +60,25 @@
 
         <div class="col-6" style="text-align: end">
             <!-- buttons -->
-            <a class="btn btn-outline-dark page-buttons" asp-action="Create">Додати працівника</a>
-            <a class="btn btn-outline-dark page-buttons" id="print-employees">Друк працівників</a>
+            <a class="btn btn-sm btn-outline-dark page-buttons" asp-action="Create">Додати працівника</a>
+            <a class="btn btn-sm btn-outline-dark page-buttons" id="print-employees">Друк працівників</a>
         </div>
 
     </div>
 
 
     <!-- TABLE -->
-    <div class="error-list mt-3">
-        @foreach (var error in Model.Errors)
-        {
-            <span class="error">@error</span>
-        }
-    </div>
     <div class="table-responsive">
         <table class="table table-striped table-sm" id="employees-table">
             <thead>
                 <tr>
-                    <th scope="col" width="30" class="text-center">#</th>
-                    <th scope="col" width="200">ПІБ</th>
-                    <th scope="col" width="100">Посада</th>
-                    <th scope="col" width="100">Зарплата</th>
-                    <th scope="col" width="180">Дата початку роботи</th>
-                    <th scope="col" width="150">Дата народження</th>
-                    <th scope="col" width="150">Телефон</th>
+                    <th scope="col" style="min-width: 30px;" class="text-center">#</th>
+                    <th scope="col">ПІБ</th>
+                    <th scope="col" style="min-width: 100px;">Посада</th>
+                    <th scope="col" style="min-width: 100px;">Зарплата</th>
+                    <th scope="col" style="min-width: 180px;">Дата початку роботи</th>
+                    <th scope="col" style="min-width: 150px;">Дата народження</th>
+                    <th scope="col" style="min-width: 150px;">Телефон</th>
                     <th scope="col">Адреса</th>
                     <th scope="col" class="actions">Редагувати</th>
                     <th scope="col" class="actions">Видалити</th>
