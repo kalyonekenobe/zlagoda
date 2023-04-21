@@ -31,7 +31,7 @@ namespace Zlagoda.Controllers
         }
 
         [HttpGet]
-        [Route("category/delete/{id}")]
+        [Route("categories/delete/{id}")]
         [JwtAuthorize(Role = nameof(UserRoles.Manager))]
         public async Task<IActionResult> Delete(int id)
         {

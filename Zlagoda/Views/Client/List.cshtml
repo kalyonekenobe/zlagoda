@@ -1,4 +1,5 @@
 ﻿@using Zlagoda.Business.Entities;
+@model Zlagoda.Models.ClientListViewModel
 
 <style>
     .page-buttons {
@@ -24,8 +25,24 @@
             <a asp-action="Index" asp-controller="Home" class="btn btn-sm btn-secondary" style="min-width: 100px;">Назад</a>
         </div>
     </div>
-    <div class="row justify-content-between">
-        <div class="col-12" style="text-align: end">
+    <div class="row justify-content-between align-items-end flex-wrap">
+        <div class="col-12 col-xl-8 search-container flex-wrap flex-md-nowrap">
+            <form method="GET" asp-action="Index" class="d-inline-flex col-12 col-md-3 me-2 flex-column">
+                <label>Пошук за відсотком знижки</label>
+                <div class="form-group d-inline-flex w-100">
+                    <input asp-for="percent" type="number" class="form-control search w-100" min="0" placeholder="Відсоток знижки">
+                    <button type="submit" class="btn btn-dark search-btn">Знайти</button>
+                </div>
+            </form>
+            <form method="GET" asp-action="Index" class="d-inline-flex col-12 col-md-9 flex-column">
+                <label>Пошук за прізвищем</label>
+                <div class="form-group d-inline-flex w-100">
+                    <input asp-for="surname" type="text" class="form-control search w-100" placeholder="Пошук клієнта за прізвищем">
+                    <button type="submit" class="btn btn-dark search-btn">Знайти</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-12 col-xl-4" style="text-align: end">
             <!-- buttons -->
             <a class="btn btn-sm btn-outline-dark page-buttons" asp-action="Create">Додати клієнта</a>
             <a class="btn btn-sm btn-outline-dark page-buttons" id="print-clients">Друк клієнтів</a>
@@ -52,7 +69,7 @@
                 @{
                     var number = 0;
                 }
-                @foreach (CustomerCard client in Model.Clients)
+                @foreach (var client in Model.Clients)
                 {
                     number++;
                     <tr>
