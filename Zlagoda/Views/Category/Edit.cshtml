@@ -1,0 +1,29 @@
+﻿@model Zlagoda.Models.EditCategoryViewModel
+
+<div class="container pt-4">
+    <div class="row mb-3 mt-2">
+        <div class="col d-flex justify-content-between align-items-center flex-nowrap">
+            <h4 class="text-start w-100">Редагування категорії товарів</h4>
+            <a asp-action="Index" asp-controller="Category" class="btn btn-sm btn-secondary" style="min-width: 100px;">Назад</a>
+        </div>
+    </div>
+    <form method="POST" asp-action="Edit">
+        @foreach (var error in Model.Errors)
+        {
+            <span class="error">@error<i class="fa-solid fa-xmark close"></i></span>
+        }
+        <div class="row g-3">
+            <input asp-for="Category.category_number" type="hidden" class="form-control" required>
+
+            <div class="col-sm-12">
+                <label asp-for="Category.category_name" class="form-label">Назва категорії</label>
+                <input asp-for="Category.category_name" type="text" class="form-control" required>
+            </div>
+
+            <div class="col-12">
+                <button class="btn btn-primary w-100" type="submit">Зберегти зміни</button>
+            </div>
+        </div>
+    </form>
+
+</div>

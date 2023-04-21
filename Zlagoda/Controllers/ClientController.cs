@@ -107,10 +107,6 @@ namespace Zlagoda.Controllers
             try
             {
                 var client = await _customerCardRepository.GetCustomerCardByNumberAsync(id);
-                if (client is null)
-                {
-                    throw new Exception();
-                }
                 var model = new EditClientViewModel
                 {
                     Title = "Edit client",
