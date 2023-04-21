@@ -118,6 +118,27 @@ namespace Zlagoda.Business.Repositories
             }
         }
 
+        public async Task<Employee> GetEmployeeByPhoneAsync(string phone)
+        {
+            string query = @"SELECT * 
+                             FROM Employee 
+                             WHERE phone_number=@PhoneNumber";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var employee = await connection.QueryFirstOrDefaultAsync<Employee>(query, new
+                {
+                    PhoneNumber = phone,
+                });
+
+                if (employee is null)
+                {
+                    throw new Exception("Error when fetching employee by phone!");
+                }
+
+                return employee;
+            }
+        }
+
         public async Task<dynamic> GetEmployeePhoneAndAddressBySurnameAsync(string surname)
         {
             string query = @"SELECT phone_number, city, street, zip_code 

@@ -80,12 +80,12 @@
                 </tr>
             </thead>
             <tbody>
-                @{ var employeeNumber = 0; }
+                @{ var number = 0; }
                 @foreach (Employee employee in Model.Employees)
                 {
-                    employeeNumber++;
+                    number++;
                     <tr>
-                        <td class="text-center">@employeeNumber</td>
+                        <td class="text-center">@number</td>
                         <td>@employee.empl_surname @employee.empl_name @employee.empl_patronymic</td>
                         <td>@employee.empl_role</td>
                         <td>@employee.salary.ToString("0.00")$</td>

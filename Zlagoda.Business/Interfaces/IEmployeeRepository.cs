@@ -11,5 +11,6 @@ namespace Zlagoda.Business.Interfaces
 		Task<IEnumerable<Employee>> GetAllEmployeesCashiersOrderedBySurnameAsync();
 		Task<dynamic> GetEmployeePhoneAndAddressBySurnameAsync(string surname);
 		Task<Employee> GetEmployeeByIdAsync(string id);
+		Task<Employee> GetEmployeeByPhoneAsync(string phone);
 	}
 }

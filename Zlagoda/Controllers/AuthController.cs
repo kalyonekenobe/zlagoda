@@ -39,7 +39,7 @@ namespace Zlagoda.Controllers
         {
             try
             {
-                var token = await _authService.SignIn(model.IdEmployee, model.Password);
+                var token = await _authService.SignIn(model.Phone, model.Password);
                 var cookies = _httpContextAccessor.HttpContext?.Response.Cookies;
                 if (cookies is null)
                 {

@@ -14,13 +14,13 @@ namespace Zlagoda.Services
             _passwordService = new PasswordService();
         }
 
-        public async Task<string> SignIn(string employeeId, string password)
+        public async Task<string> SignIn(string phone, string password)
         {
-            var employee = await _employeeRepository.GetEmployeeByIdAsync(employeeId);
+            var employee = await _employeeRepository.GetEmployeeByPhoneAsync(phone);
             password = _passwordService.Encrypt(password);
             if (employee is null || employee.empl_password is null || !_passwordService.ComparePasswords(password, employee.empl_password))
             {
-                throw new Exception("Wrong employee id or password!");
+                throw new Exception("Wrong employee phone or password!");
             }
             var user = new User(employee);
             var token = JwtTokenService.GenerateRefreshToken(user);
