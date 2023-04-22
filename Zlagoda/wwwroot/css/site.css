@@ -9,6 +9,9 @@ html {
 }
 
 @media only print {
+    @page {
+        margin: 0;
+    }
     header, footer, h1, h2, h3, h4, h5, h6, .noprint, a, .dropdown {
         display: none !important;
     }
@@ -89,4 +92,42 @@ body {
     font-size: 14px;
     margin-bottom: 5px;
     color: gray;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown .dropdown-toggle {
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    border: 2px solid silver;
+    font-weight: 500;
+    color: #555555;
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdown .dropdown-menu {
+    width: 100%;
+    padding: 5px 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.dropdown .dropdown-menu li {
+    width: 100%;
+}
+
+.dropdown .dropdown-menu a {
+    width: 100%;
+    padding: 2px 10px;
+    color: #555555;
+    text-decoration: none;
+    display: flex;
+}
+
+.dropdown .dropdown-menu a:hover {
+    background: #dddddd;
 }

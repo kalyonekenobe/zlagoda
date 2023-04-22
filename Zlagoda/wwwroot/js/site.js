@@ -1,4 +1,4 @@
-﻿let modelsToPrint = ['employees', 'categories', 'clients'];
+﻿let modelsToPrint = ['employees', 'categories', 'clients', 'products'];
 
 modelsToPrint.forEach(modelName => {
     let printButton = document.getElementById(`print-${modelName}`);

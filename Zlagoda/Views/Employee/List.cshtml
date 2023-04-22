@@ -35,21 +35,23 @@
         <div class="col-4">
             <!-- dropdown -->
             <div class="dropdown">
-                <button class="btn btn-sm btn-outline-dark dropdown-toggle page-buttons" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    @(Context.Request.Query["show"] == "cashiers" ? "Касири" : "Усі працівники")
-                </button>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a class="dropdown-item" asp-all-route-data="allEmployeesRouteData">
-                            Усі працівники    
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" asp-all-route-data="cashiersEmployeesRouteData">
-                            Касири
-                        </a>    
-                    </li>
-                </ul>
+                <div class="btn-group">
+                    <button class="btn btn-sm dropdown-toggle page-buttons" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @(Context.Request.Query["show"] == "cashiers" ? "Касири" : "Усі працівники")
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" asp-all-route-data="allEmployeesRouteData">
+                                Усі працівники
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" asp-all-route-data="cashiersEmployeesRouteData">
+                                Касири
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 

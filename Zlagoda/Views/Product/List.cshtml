@@ -1,0 +1,115 @@
+﻿@using Zlagoda.Business.Entities;
+@model Zlagoda.Models.ProductListViewModel;
+
+<style>
+    .page-buttons {
+        border: 2px solid;
+        font-weight: 500;
+        width: 175px;
+    }
+
+    .table-responsive {
+        margin: 20px 0 40px 0;
+    }
+</style>
+<div class="container-fluid pt-4">
+    <div class="error-list mb-2">
+        @foreach (var error in Model.Errors)
+        {
+            <span class="error">@error<i class="fa-solid fa-xmark close"></i></span>
+        }
+    </div>
+    <div class="row mb-3">
+        <div class="col d-flex justify-content-between align-items-center flex-nowrap">
+            <h4 class="text-start w-100">Список товарів</h4>
+            <a asp-action="Index" asp-controller="Home" class="btn btn-sm btn-secondary" style="min-width: 100px;">Назад</a>
+        </div>
+    </div>
+    <div class="row justify-content-between align-items-end flex-wrap noprint">
+        <div class="col-12 col-xl-8 search-container flex-wrap flex-md-nowrap">
+            <div class="dropdown category-dropdown col-12 col-sm-3 col-lg-2 me-2">
+                <label>Пошук за категорією</label>
+                <br>
+                <div class="btn-group w-100">
+                    <button class="btn btn-sm dropdown-toggle d-inline-flex justify-content-between align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @{
+                            var selectedCategory = Model.Categories.FirstOrDefault(category => category.category_number == int.Parse(Context.Request.Query["category"].FirstOrDefault() ?? "0"));
+                        }
+                        @(selectedCategory?.category_name ?? "Не обрано")
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a asp-action="Index" asp-route-category="@null">
+                                Не обрано
+                            </a>
+                        </li>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <li>
+                                <a asp-action="Index" asp-route-category="@category.category_number">
+                                    @category.category_name
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <form method="GET" asp-action="Index" class="d-inline-flex col-12 col-sm-9 col-lg-10 me-2 flex-column">
+                <label>Пошук за назвою товару</label>
+                <div class="form-group d-inline-flex w-100">
+                    <input asp-for="search" type="text" class="form-control search w-100" placeholder="Пошук за назвою товару">
+                    <button type="submit" class="btn btn-dark search-btn">Знайти</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-12 col-xl-4" style="text-align: end">
+            <!-- buttons -->
+            <a class="btn btn-sm btn-outline-dark page-buttons" asp-action="Create">Додати товар</a>
+            <a class="btn btn-sm btn-outline-dark page-buttons" id="print-products">Друк товарів</a>
+        </div>
+    </div>
+
+
+    <!-- TABLE -->
+    <div class="table-responsive">
+        <table class="table table-striped table-sm printable" id="products-table">
+            <thead>
+                <tr>
+                    <th scope="col">ID продукту</th>
+                    <th scope="col">Назва</th>
+                    <th scope="col">Категорія</th>
+                    <th scope="col">Характеристики</th>
+                    <th scope="col" style="width: 130px;" class="noprint">Редагувати</th>
+                    <th scope="col" style="width: 120px;" class="noprint">Видалити</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var number = 0;
+                }
+                @foreach (var product in Model.Products)
+                {
+                    number++;
+                    <tr>
+                        <td>@product.id_product</td>
+                        <td>@product.product_name</td>
+                        <td>@product.category.category_name</td>
+                        <td>@product.characteristics</td>
+                        <td class="noprint">
+                            <a class="btn btn-sm btn-outline-primary edit-delete-btn" asp-action="Edit" asp-route-id="@product.id_product">
+                                <i class="fa-solid fa-pen-to-square me-2"></i>
+                                Редагувати
+                            </a>
+                        </td>
+                        <td class="noprint">
+                            <a class="btn btn-sm btn-outline-danger edit-delete-btn" asp-action="Delete" asp-route-id="@product.id_product">
+                                <i class="fa-solid fa-trash me-2"></i>
+                                Видалити
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
