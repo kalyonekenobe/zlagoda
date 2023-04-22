@@ -1,4 +1,5 @@
-﻿<div class="container">
+﻿@using Zlagoda.Services;
+<div class="container">
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 g-5 py-5">
         <div class="col d-flex align-items-start">
             <div>
@@ -37,7 +38,7 @@
                     Товари в магазині
                 </h3>
                 <p>Отримати інформацію про усі товари у магазині, відсортовані за назвою...</p>
-                <a class="btn btn-light">Перейти</a>
+                <a class="btn btn-light" asp-action="Index" asp-controller="StoreProduct">Перейти</a>
             </div>
         </div>
         <div class="col d-flex align-items-start">
@@ -47,7 +48,8 @@
                     Про мене
                 </h3>
                 <p>Отримати всю інформацію про себе...</p>
-                <a class="btn btn-light">Перейти</a>
+                @{ var user = ClaimsService.GetUserFromClaims(Context.User); }
+                <a class="btn btn-light" asp-action="Details" asp-controller="Employee" asp-route-id="@user.id_employee">Перейти</a>
             </div>
         </div>
     </div>

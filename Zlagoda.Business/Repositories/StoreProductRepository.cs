@@ -62,14 +62,86 @@ namespace Zlagoda.Business.Repositories
             }
         }
 
+        public async Task<IEnumerable<StoreProduct>> GetAllNonPromotionalStoreProductsOrderedByNameThenByQuantityAsync()
+        {
+            string query = @"SELECT *
+                             FROM Store_Product SP
+                             INNER JOIN Product P
+                             ON SP.id_product=P.id_product
+                             WHERE promotional_product=0
+                             ORDER BY product_name ASC, products_number ASC";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var result = await connection.QueryAsync<dynamic>(query);
+                List<StoreProduct> storeProducts = new List<StoreProduct>();
+                foreach (var resultItem in result)
+                {
+                    storeProducts.Add(new StoreProduct
+                    {
+                        UPC = resultItem.UPC,
+                        UPC_prom = resultItem.UPC_prom,
+                        id_product = resultItem.id_product,
+                        selling_price = resultItem.selling_price,
+                        products_number = resultItem.products_number,
+                        promotional_product = resultItem.promotional_product,
+                        product = new Product
+                        {
+                            id_product = resultItem.id_product,
+                            category_number = resultItem.category_number,
+                            product_name = resultItem.product_name,
+                            characteristics = resultItem.characteristics,
+                        },
+                    });
+                }
+
+                return storeProducts;
+            }
+        }
+
         public async Task<IEnumerable<StoreProduct>> GetAllNonPromotionalStoreProductsOrderedByQuantityThenByNameAsync()
         {
             string query = @"SELECT *
                              FROM Store_Product SP
                              INNER JOIN Product P
                              ON SP.id_product=P.id_product
-                             WHERE promotional_product=FALSE
+                             WHERE promotional_product=0
                              ORDER BY products_number ASC, product_name ASC";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var result = await connection.QueryAsync<dynamic>(query);
+                List<StoreProduct> storeProducts = new List<StoreProduct>();
+                foreach (var resultItem in result)
+                {
+                    storeProducts.Add(new StoreProduct
+                    {
+                        UPC = resultItem.UPC,
+                        UPC_prom = resultItem.UPC_prom,
+                        id_product = resultItem.id_product,
+                        selling_price = resultItem.selling_price,
+                        products_number = resultItem.products_number,
+                        promotional_product = resultItem.promotional_product,
+                        product = new Product
+                        {
+                            id_product = resultItem.id_product,
+                            category_number = resultItem.category_number,
+                            product_name = resultItem.product_name,
+                            characteristics = resultItem.characteristics,
+                        },
+                    });
+                }
+
+                return storeProducts;
+            }
+        }
+
+        public async Task<IEnumerable<StoreProduct>> GetAllPromotionalStoreProductsOrderedByNameThenByQuantityAsync()
+        {
+            string query = @"SELECT *
+                             FROM Store_Product SP
+                             INNER JOIN Product P
+                             ON SP.id_product=P.id_product
+                             WHERE promotional_product=1
+                             ORDER BY product_name ASC, products_number ASC";
             using (var connection = new SqlConnection(_connectionString))
             {
                 var result = await connection.QueryAsync<dynamic>(query);
@@ -104,7 +176,7 @@ namespace Zlagoda.Business.Repositories
                              FROM Store_Product SP
                              INNER JOIN Product P
                              ON SP.id_product=P.id_product
-                             WHERE promotional_product=TRUE
+                             WHERE promotional_product=1
                              ORDER BY products_number ASC, product_name ASC";
             using (var connection = new SqlConnection(_connectionString))
             {

@@ -131,3 +131,26 @@ body {
 .dropdown .dropdown-menu a:hover {
     background: #dddddd;
 }
+
+.user-details .row > div {
+    margin-bottom: 20px;
+}
+
+.user-details .row > div > span {
+    border: 1px solid silver;
+    padding: 7px 10px;
+    border-radius: 5px;
+    display: flex;
+    font-size: 0.9rem;
+    width: 100%;
+    font-weight: 600;
+    box-sizing: border-box;
+    color: #333333;
+    background: #f6f6f6;
+    user-select: none;
+}
+
+.user-details .row > div > label {
+    color: gray;
+    margin-bottom: 2px;
+}

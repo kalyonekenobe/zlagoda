@@ -1,0 +1,68 @@
+﻿@using Zlagoda.Enums;
+@model Zlagoda.Models.EmployeeDetailsViewModel
+
+<div class="container pt-4 user-details">
+    <div class="row mb-3 mt-2">
+        <div class="col d-flex justify-content-between align-items-center flex-nowrap">
+            <h4 class="text-start w-100">Інформація про користувача</h4>
+            <a asp-action="Index" class="btn btn-sm btn-secondary d-inline" style="min-width: 100px;">Назад</a>
+        </div>
+    </div>
+    <div class="row g-2">
+        <div class="col-12 col-md-4">
+            <label>Прізвище</label>
+            <br>
+            <span>@Model.Employee.empl_surname</span>
+        </div>
+        <div class="col-12 col-md-4">
+            <label>Ім'я</label>
+            <br>
+            <span>@Model.Employee.empl_name</span>
+        </div>
+        <div class="col-12 col-md-4">
+            <label>По-батькові</label>
+            <br>
+            <span>@Model.Employee.empl_patronymic</span>
+        </div>
+        <div class="col-12">
+            <label>Роль</label>
+            <br>
+            <span>@(Model.Employee.empl_role == nameof(UserRoles.Manager) ? "Менеджер" : "Касир")</span>
+        </div>
+        <div class="col-6">
+            <label>Зарплата</label>
+            <br>
+            <span>@Model.Employee.salary$</span>
+        </div>
+        <div class="col-6">
+            <label>Номер телефону</label>
+            <br>
+            <span>@Model.Employee.phone_number</span>
+        </div>
+        <div class="col-6">
+            <label>Дата народження</label>
+            <br>
+            <span>@Model.Employee.date_of_birth.ToString("dd/MM/yyyy")</span>
+        </div>
+        <div class="col-6">
+            <label>Дата початку роботи</label>
+            <br>
+            <span>@Model.Employee.date_of_start.ToString("dd/MM/yyyy")</span>
+        </div>
+        <div class="col-12 col-sm-4">
+            <label>Місто</label>
+            <br>
+            <span>@Model.Employee.city</span>
+        </div>
+        <div class="col-12 col-sm-4">
+            <label>Вулиця</label>
+            <br>
+            <span>@Model.Employee.street</span>
+        </div>
+        <div class="col-12 col-sm-4">
+            <label>Індекс</label>
+            <br>
+            <span>@Model.Employee.zip_code</span>
+        </div>
+    </div>
+</div>

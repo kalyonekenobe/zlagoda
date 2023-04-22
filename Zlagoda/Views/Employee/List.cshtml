@@ -25,13 +25,6 @@
         </div>
     </div>
     <div class="row justify-content-between">
-        @{
-            var allEmployeesRouteData = new Dictionary<string, string>();
-            var cashiersEmployeesRouteData = new Dictionary<string, string>
-            {
-                {"show", "cashiers"}
-            };
-        }
         <div class="col-4">
             <!-- dropdown -->
             <div class="dropdown">
@@ -41,12 +34,12 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li>
-                            <a class="dropdown-item" asp-all-route-data="allEmployeesRouteData">
+                            <a class="dropdown-item" asp-route-show="">
                                 Усі працівники
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" asp-all-route-data="cashiersEmployeesRouteData">
+                            <a class="dropdown-item" asp-route-show="cashiers">
                                 Касири
                             </a>
                         </li>

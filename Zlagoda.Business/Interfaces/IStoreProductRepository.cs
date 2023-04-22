@@ -11,7 +11,9 @@ namespace Zlagoda.Business.Interfaces
 		Task<IEnumerable<StoreProduct>> GetAllStoreProductsOrderedByQuantityAsync();
 		Task<dynamic> GetStoreProductPriceQuantityNameAndCharacteristicsByUPCAsync(string upc);
 		Task<IEnumerable<StoreProduct>> GetAllPromotionalStoreProductsOrderedByQuantityThenByNameAsync();
+		Task<IEnumerable<StoreProduct>> GetAllPromotionalStoreProductsOrderedByNameThenByQuantityAsync();
 		Task<IEnumerable<StoreProduct>> GetAllNonPromotionalStoreProductsOrderedByQuantityThenByNameAsync();
+		Task<IEnumerable<StoreProduct>> GetAllNonPromotionalStoreProductsOrderedByNameThenByQuantityAsync();
 		Task<dynamic> GetStoreProductPriceAndQuantityByUPCAsync(string upc);
 		Task<StoreProduct> GetStoreProductByUPCAsync(string upc);
 	}

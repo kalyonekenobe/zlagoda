@@ -155,5 +155,30 @@ namespace Zlagoda.Controllers
                 return View("Edit", model);
             }
         }
+
+        [HttpGet]
+        [Route("employees/details/{id}")]
+        [JwtAuthorize(Role = nameof(UserRoles.Cashier))]
+        public async Task<IActionResult> Details(string id)
+        {
+            try
+            {
+                var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
+                var model = new EmployeeDetailsViewModel
+                {
+                    Title = "Employee details",
+                    Employee = employee,
+                };
+                return View("Details", model);
+            }
+            catch (Exception exception)
+            {
+                TempData["Errors"] = new List<string>
+                {
+                    exception.Message,
+                };
+                return RedirectToAction("Index", "Home");
+            }
+        }
     }
 }
