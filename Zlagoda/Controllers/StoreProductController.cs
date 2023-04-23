@@ -2,6 +2,7 @@
 using Zlagoda.Attributes;
 using Zlagoda.Business.Entities;
 using Zlagoda.Business.Interfaces;
+using Zlagoda.Business.Repositories;
 using Zlagoda.Enums;
 using Zlagoda.Models;
 using Zlagoda.Services;
@@ -93,6 +94,124 @@ namespace Zlagoda.Controllers
                 };
             }
             return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        [Route("store-products/create")]
+        [JwtAuthorize]
+        public async Task<IActionResult> Create()
+        {
+            try
+            {
+                var products = await _productRepository.GetAllProductsOrderedByNameAsync();
+                var nonPromotionalStoreProducts = await _storeProductRepository.GetAllNonPromotionalStoreProductsOrderedByNameThenByQuantityAsync();
+                var model = new CreateStoreProductViewModel
+                {
+                    Title = "Create store product",
+                    Products = products,
+                    NonPromotionalStoreProducts = nonPromotionalStoreProducts,
+                };
+                return View("Create", model);
+            }
+            catch (Exception exception)
+            {
+                TempData["Errors"] = new List<string>
+                {
+                    exception.Message,
+                };
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        [Route("store-products/create")]
+        [JwtAuthorize]
+        public async Task<IActionResult> Create(CreateStoreProductViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    model.NonPromotionalStoreProducts = await _storeProductRepository.GetAllNonPromotionalStoreProductsOrderedByNameThenByQuantityAsync();
+                    model.Products = await _productRepository.GetAllProductsOrderedByNameAsync();
+                    return View("Create", model);
+                }
+                if (model.StoreProduct.promotional_product)
+                {
+                    if (model.ParentUPC is null)
+                    {
+                        throw new Exception("Non promotional store product with such UPC doesn't exist!");
+                    }
+                    var parentProduct = await _storeProductRepository.GetStoreProductByUPCAsync(model.ParentUPC);
+                    model.StoreProduct.selling_price = parentProduct.selling_price * 0.8m;
+                    model.StoreProduct.id_product = parentProduct.id_product;
+                    parentProduct.UPC_prom = model.StoreProduct.UPC;
+                    await _storeProductRepository.CreateStoreProductAsync(model.StoreProduct);
+                    await _storeProductRepository.UpdateStoreProductAsync(parentProduct);
+                }
+                else
+                {
+                    await _storeProductRepository.CreateStoreProductAsync(model.StoreProduct);
+                }
+                return RedirectToAction("Index");
+            }
+            catch (Exception exception)
+            {
+                model.Errors.Add(exception.Message);
+                model.NonPromotionalStoreProducts = await _storeProductRepository.GetAllNonPromotionalStoreProductsOrderedByNameThenByQuantityAsync();
+                model.Products = await _productRepository.GetAllProductsOrderedByNameAsync();
+                return View("Create", model);
+            }
+        }
+
+        [HttpGet]
+        [Route("store-products/edit/{id}")]
+        [JwtAuthorize]
+        public async Task<IActionResult> Edit(string id)
+        {
+            try
+            {
+                var products = await _productRepository.GetAllProductsOrderedByNameAsync();
+                var storeProduct = await _storeProductRepository.GetStoreProductByUPCAsync(id);
+                var model = new EditStoreProductViewModel
+                {
+                    Title = "Edit store product",
+                    Products = products,
+                    StoreProduct = storeProduct,
+                };
+                return View("Edit", model);
+            }
+            catch (Exception exception)
+            {
+                TempData["Errors"] = new List<string>
+                {
+                    exception.Message
+                };
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        [Route("store-products/edit/{id}")]
+        [JwtAuthorize]
+        public async Task<IActionResult> Edit(EditStoreProductViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    model.Products = await _productRepository.GetAllProductsOrderedByNameAsync();
+                    return View("Edit", model);
+                }
+                await _storeProductRepository.UpdateStoreProductAsync(model.StoreProduct);
+                return RedirectToAction("Index");
+            }
+            catch (Exception exception)
+            {
+                model.Errors.Add(exception.Message);
+                model.Products = await _productRepository.GetAllProductsOrderedByNameAsync();
+                return View("Edit", model);
+            }
         }
 
         [HttpGet]

@@ -71,7 +71,9 @@ namespace Zlagoda.Business.Repositories
             string query = @"SELECT *
                              FROM Store_Product SP
                              INNER JOIN Product P
-                             ON SP.id_product=P.id_product
+                             ON SP.id_product=P.id_product 
+                             INNER JOIN Category C
+                             ON P.category_number=C.category_number
                              WHERE promotional_product=0
                              ORDER BY product_name ASC, products_number ASC";
             using (var connection = new SqlConnection(_connectionString))
@@ -94,6 +96,11 @@ namespace Zlagoda.Business.Repositories
                             category_number = resultItem.category_number,
                             product_name = resultItem.product_name,
                             characteristics = resultItem.characteristics,
+                            category = new Category
+                            {
+                                category_number = resultItem.category_number,
+                                category_name = resultItem.category_name,
+                            },
                         },
                     });
                 }
@@ -107,7 +114,9 @@ namespace Zlagoda.Business.Repositories
             string query = @"SELECT *
                              FROM Store_Product SP
                              INNER JOIN Product P
-                             ON SP.id_product=P.id_product
+                             ON SP.id_product=P.id_product 
+                             INNER JOIN Category C
+                             ON P.category_number=C.category_number
                              WHERE promotional_product=0
                              ORDER BY products_number ASC, product_name ASC";
             using (var connection = new SqlConnection(_connectionString))
@@ -130,6 +139,11 @@ namespace Zlagoda.Business.Repositories
                             category_number = resultItem.category_number,
                             product_name = resultItem.product_name,
                             characteristics = resultItem.characteristics,
+                            category = new Category
+                            {
+                                category_number = resultItem.category_number,
+                                category_name = resultItem.category_name,
+                            },
                         },
                     });
                 }
@@ -143,7 +157,9 @@ namespace Zlagoda.Business.Repositories
             string query = @"SELECT *
                              FROM Store_Product SP
                              INNER JOIN Product P
-                             ON SP.id_product=P.id_product
+                             ON SP.id_product=P.id_product 
+                             INNER JOIN Category C
+                             ON P.category_number=C.category_number
                              WHERE promotional_product=1
                              ORDER BY product_name ASC, products_number ASC";
             using (var connection = new SqlConnection(_connectionString))
@@ -166,6 +182,11 @@ namespace Zlagoda.Business.Repositories
                             category_number = resultItem.category_number,
                             product_name = resultItem.product_name,
                             characteristics = resultItem.characteristics,
+                            category = new Category
+                            {
+                                category_number = resultItem.category_number,
+                                category_name = resultItem.category_name,
+                            },
                         },
                     });
                 }
@@ -179,7 +200,9 @@ namespace Zlagoda.Business.Repositories
             string query = @"SELECT *
                              FROM Store_Product SP
                              INNER JOIN Product P
-                             ON SP.id_product=P.id_product
+                             ON SP.id_product=P.id_product 
+                             INNER JOIN Category C
+                             ON P.category_number=C.category_number
                              WHERE promotional_product=1
                              ORDER BY products_number ASC, product_name ASC";
             using (var connection = new SqlConnection(_connectionString))
@@ -202,6 +225,11 @@ namespace Zlagoda.Business.Repositories
                             category_number = resultItem.category_number,
                             product_name = resultItem.product_name,
                             characteristics = resultItem.characteristics,
+                            category = new Category
+                            {
+                                category_number = resultItem.category_number,
+                                category_name = resultItem.category_name,
+                            },
                         },
                     });
                 }
@@ -215,7 +243,9 @@ namespace Zlagoda.Business.Repositories
             string query = @"SELECT *
                              FROM Store_Product SP
                              INNER JOIN Product P
-                             ON SP.id_product=P.id_product
+                             ON SP.id_product=P.id_product 
+                             INNER JOIN Category C
+                             ON P.category_number=C.category_number
                              ORDER BY product_name ASC";
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -237,6 +267,11 @@ namespace Zlagoda.Business.Repositories
                             category_number = resultItem.category_number,
                             product_name = resultItem.product_name,
                             characteristics = resultItem.characteristics,
+                            category = new Category
+                            {
+                                category_number = resultItem.category_number,
+                                category_name = resultItem.category_name,
+                            },
                         },
                     });
                 }
@@ -250,7 +285,9 @@ namespace Zlagoda.Business.Repositories
             string query = @"SELECT *
                              FROM Store_Product SP
                              INNER JOIN Product P
-                             ON SP.id_product=P.id_product
+                             ON SP.id_product=P.id_product 
+                             INNER JOIN Category C
+                             ON P.category_number=C.category_number
                              ORDER BY products_number ASC";
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -272,6 +309,11 @@ namespace Zlagoda.Business.Repositories
                             category_number = resultItem.category_number,
                             product_name = resultItem.product_name,
                             characteristics = resultItem.characteristics,
+                            category = new Category
+                            {
+                                category_number = resultItem.category_number,
+                                category_name = resultItem.category_name,
+                            },
                         },
                     });
                 }
@@ -285,7 +327,9 @@ namespace Zlagoda.Business.Repositories
             string query = @"SELECT *
                              FROM Store_Product SP
                              INNER JOIN Product P
-                             ON SP.id_product=P.id_product
+                             ON SP.id_product=P.id_product 
+                             INNER JOIN Category C
+                             ON P.category_number=C.category_number
                              WHERE SP.UPC=@UPC";
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -313,6 +357,58 @@ namespace Zlagoda.Business.Repositories
                         category_number = result.category_number,
                         product_name = result.product_name,
                         characteristics = result.characteristics,
+                        category = new Category
+                        {
+                            category_number = result.category_number,
+                            category_name = result.category_name,
+                        },
+                    },
+                };
+
+                return storeProduct;
+            }
+        }
+
+        public async Task<StoreProduct?> GetStoreProductParentByUPCAsync(string upc)
+        {
+            string query = @"SELECT *
+                             FROM Store_Product SP
+                             INNER JOIN Product P
+                             ON SP.id_product=P.id_product 
+                             INNER JOIN Category C
+                             ON P.category_number=C.category_number
+                             WHERE SP.UPC=@UPC";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var result = await connection.QueryFirstOrDefaultAsync(query, new
+                {
+                    UPC = upc,
+                });
+
+                if (result is null)
+                {
+                    return result;
+                }
+
+                var storeProduct = new StoreProduct
+                {
+                    UPC = result.UPC,
+                    UPC_prom = result.UPC_prom,
+                    id_product = result.id_product,
+                    selling_price = result.selling_price,
+                    products_number = result.products_number,
+                    promotional_product = result.promotional_product,
+                    product = new Product
+                    {
+                        id_product = result.id_product,
+                        category_number = result.category_number,
+                        product_name = result.product_name,
+                        characteristics = result.characteristics,
+                        category = new Category
+                        {
+                            category_number = result.category_number,
+                            category_name = result.category_name,
+                        },
                     },
                 };
 
@@ -393,14 +489,15 @@ namespace Zlagoda.Business.Repositories
 
         private async Task<bool> CanCreateStoreProduct(StoreProduct storeProduct)
         {
-            string query = @"(SELECT COUNT(*) FROM Product WHERE id_product=@IdProduct)";
+            string query = @"(SELECT COUNT(*) FROM Store_Product WHERE id_product=@IdProduct AND promotional_product=@PromotionalProduct)";
             using (var connection = new SqlConnection(_connectionString))
             {
                 var result = await connection.ExecuteScalarAsync<int>(query, new
                 {
                     IdProduct = storeProduct.id_product,
+                    PromotionalProduct = storeProduct.promotional_product,
                 });
-                return result <= 2;
+                return result == 0;
             }
         }
     }

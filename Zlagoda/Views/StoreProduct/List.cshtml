@@ -26,7 +26,7 @@
             <a asp-action="Index" asp-controller="Home" class="btn btn-sm btn-secondary" style="min-width: 100px;">Назад</a>
         </div>
     </div>
-    <div class="row justify-content-between align-items-end">
+    <div class="row justify-content-between align-items-end noprint">
         <div class="col-12 col-xl-8 search-container flex-wrap flex-md-nowrap">
             <!-- dropdown -->
             <div class="dropdown col-12 col-md-3 col-xl-2 me-2">
@@ -71,10 +71,10 @@
                     <button class="btn btn-sm dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         @{
                             var urlSorting = Context.Request.Query["sorting"].FirstOrDefault();
-                            string selectedSortingFilter = "Не сортувати";
+                            string selectedSortingFilter = "За назвою";
                             if (urlSorting == "quantity")
                                 selectedSortingFilter = "За кількістю";
-                            if (urlSorting == "name")
+                            else
                                 selectedSortingFilter = "За назвою";
                         }
                         @selectedSortingFilter
@@ -82,17 +82,12 @@
                     <ul class="dropdown-menu">
                         <li>
                             <a class="dropdown-item" asp-route-sorting="" asp-route-promo="@Model.Promo">
-                                Не сортувати
+                                За назвою
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item" asp-route-sorting="quantity" asp-route-promo="@Model.Promo">
                                 За кількістю
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" asp-route-sorting="name" asp-route-promo="@Model.Promo">
-                                За назвою
                             </a>
                         </li>
                     </ul>
@@ -123,8 +118,10 @@
                 <tr>
                     <th scope="col">UPC</th>
                     <th scope="col">Назва товару</th>
+                    <th scope="col">Категорія</th>
                     <th scope="col">Ціна</th>
                     <th scope="col">Кількість</th>
+                    <th scope="col">Характеристики</th>
                     <th scope="col">Тег</th>
                     <th scope="col" style="width: 130px;" class="noprint">Редагувати</th>
                     <th scope="col" style="width: 120px;" class="noprint">Видалити</th>
@@ -140,8 +137,10 @@
                     <tr>
                         <td>@product.UPC</td>
                         <td>@product.product?.product_name</td>
-                        <td>@product.selling_price$</td>
+                        <td>@product.product?.category?.category_name</td>
+                        <td>@product.selling_price.ToString("0.00")$</td>
                         <td>@product.products_number шт.</td>
+                        <td>@product.product?.characteristics</td>
                         <td>
                             @if(!product.promotional_product)
                             {

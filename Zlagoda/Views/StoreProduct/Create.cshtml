@@ -1,0 +1,89 @@
+﻿@model Zlagoda.Models.CreateStoreProductViewModel
+
+<div class="container pt-4">
+    <div class="row mb-3 mt-2">
+        <div class="col d-flex justify-content-between align-items-center flex-nowrap">
+            <h4 class="text-start w-100">Додавання нового товару в магазині</h4>
+            <a asp-action="Index" class="btn btn-sm btn-secondary d-inline" style="min-width: 100px;">Назад</a>
+        </div>
+    </div>
+    @foreach (var error in Model.Errors)
+    {
+        <span class="error">@error<i class="fa-solid fa-xmark close"></i></span>
+    }
+    <div asp-validation-summary="All"></div>
+    <div class="selector store-product-type-selector mb-3">
+        <span class="selected" data-type="default">Звичайний</span>
+        <span data-type="promo">Акційний</span>
+    </div>
+    <div class="store-product-type-container visible w-100" data-type="default">
+        <form method="POST" asp-action="Create" class="w-100">
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label asp-for="StoreProduct.UPC" class="form-label">UPC товару</label>
+                    <input asp-for="StoreProduct.UPC" type="text" class="form-control" required>
+                </div>
+
+                <!-- тут вивести всі існуючі товари -->
+                <div class="col-sm-8">
+                    <label asp-for="StoreProduct.id_product" class="form-label">Товар</label>
+                    <select asp-for="StoreProduct.id_product" class="form-select" required>
+                        @foreach (var product in Model.Products)
+                        {
+                            <option value="@product.id_product">@product.product_name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="StoreProduct.selling_price" class="form-label">Ціна продажу</label>
+                    <input asp-for="StoreProduct.selling_price" type="number" min="1" class="form-control" required>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="StoreProduct.products_number" class="form-label">Кількість одиниць</label>
+                    <input asp-for="StoreProduct.products_number" type="number" min="1" class="form-control" required>
+                </div>
+
+                <input asp-for="StoreProduct.promotional_product" value="False" type="hidden">
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button class="btn btn-success w-100" type="submit">Додати</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="store-product-type-container w-100" data-type="promo">
+        <form method="POST" asp-action="Create" class="w-100">
+            <div class="row g-3">
+                <div class="col-12">
+                    <label asp-for="StoreProduct.UPC" class="form-label">UPC товару</label>
+                    <input asp-for="StoreProduct.UPC" type="text" class="form-control" required>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="ParentUPC" class="form-label">Товар, до якого застосовується знижка</label>
+                    <select asp-for="ParentUPC" class="form-select" required>
+                        @foreach (var storeProduct in Model.NonPromotionalStoreProducts)
+                        {
+                            <option value="@storeProduct.UPC">@storeProduct.product?.product_name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <label asp-for="StoreProduct.products_number" class="form-label">Кількість одиниць</label>
+                    <input asp-for="StoreProduct.products_number" type="number" min="1" class="form-control" required>
+                </div>
+
+                <input asp-for="StoreProduct.promotional_product" value="True" type="hidden">
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button class="btn btn-success w-100" type="submit">Додати</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

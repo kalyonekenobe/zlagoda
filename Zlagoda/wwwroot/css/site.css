@@ -162,3 +162,47 @@ body {
     font-size: 0.8rem;
     font-weight: 500;
 }
+
+.selector {
+    border: 1px solid rgba(33, 37, 41, 1);
+    border-radius: 5px;
+    display: flex;
+    overflow: hidden;
+    user-select: none;
+}
+
+.selector span {
+    width: 100%;
+    text-align: center;
+    display: inline-flex;
+    padding: 5px 20px;
+    align-items: center;
+    justify-content: center;
+    color: rgba(33, 37, 41, 1);
+    cursor: pointer;
+}
+
+.selector span.selected {
+    color: white;
+    background: rgba(33, 37, 41, 1);
+}
+
+.selector span:not(.selected):hover {
+    background: #f6f6f6;
+}
+
+.store-product-type-container {
+    display: none;
+}
+
+.store-product-type-container.visible {
+    display: flex;
+}
+
+input[readonly] {
+    border: 1px solid silver !important;
+    color: #333333;
+    background: rgba(0, 0, 0, 0.05) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}

@@ -70,6 +70,7 @@ namespace Zlagoda.Controllers
             {
                 if (!ModelState.IsValid)
                 {
+                    model.Categories = await _categoryRepository.GetAllCategoriesOrderedByNameAsync();
                     return View("Create", model);
                 }
                 await _productRepository.CreateProductAsync(model.Product);
@@ -119,6 +120,7 @@ namespace Zlagoda.Controllers
             {
                 if (!ModelState.IsValid)
                 {
+                    model.Categories = await _categoryRepository.GetAllCategoriesOrderedByNameAsync();
                     return View("Edit", model);
                 }
                 await _productRepository.UpdateProductAsync(model.Product);

@@ -1,0 +1,62 @@
+﻿@model Zlagoda.Models.EditStoreProductViewModel
+
+<div class="container pt-4">
+    <div class="row mb-3 mt-2">
+        <div class="col d-flex justify-content-between align-items-center flex-nowrap">
+            <h4 class="text-start w-100">Редагування товару в магазині</h4>
+            <a asp-action="Index" class="btn btn-sm btn-secondary d-inline" style="min-width: 100px;">Назад</a>
+        </div>
+    </div>
+    <form method="POST" asp-action="Edit" class="w-100">
+        @foreach (var error in Model.Errors)
+        {
+            <span class="error">@error<i class="fa-solid fa-xmark close"></i></span>
+        }
+        <div asp-validation-summary="All"></div>
+        <div class="row g-3">
+            <input asp-for="StoreProduct.UPC" type="hidden" class="form-control" required>
+            @if (Model.StoreProduct.promotional_product)
+            {
+                <input asp-for="StoreProduct.id_product" type="hidden" class="form-control" required>
+
+                <!-- тут вивести всі існуючі товари -->
+                <div class="col-12">
+                    <label class="form-label">Товар</label>
+                    <input value="@Model.StoreProduct.product?.product_name" type="text" class="form-control" readonly>
+                </div>
+
+                <input asp-for="StoreProduct.selling_price" type="hidden" class="form-control" required>
+            }
+            else
+            {
+                <!-- тут вивести всі існуючі товари -->
+                <div class="col-12">
+                    <label asp-for="StoreProduct.id_product" class="form-label">Товар</label>
+                    <select asp-for="StoreProduct.id_product" class="form-select" required>
+                        @foreach (var product in Model.Products)
+                        {
+                            <option value="@product.id_product">@product.product_name</option>
+                        }
+                    </select>
+                </div>
+
+                    <div class="col-12">
+                        <label asp-for="StoreProduct.selling_price" class="form-label">Ціна продажу</label>
+                        <input asp-for="StoreProduct.selling_price" type="number" min="1" class="form-control" required>
+                    </div>
+            }
+
+            <div class="col-12">
+                <label asp-for="StoreProduct.products_number" class="form-label">Кількість одиниць</label>
+                <input asp-for="StoreProduct.products_number" type="number" min="1" class="form-control" required>
+            </div>
+
+            <input asp-for="StoreProduct.promotional_product" type="hidden">
+        </div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <button class="btn btn-primary w-100" type="submit">Зберегти зміни</button>
+            </div>
+        </div>
+    </form>
+</div>
