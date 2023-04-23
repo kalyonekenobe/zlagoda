@@ -1,5 +1,11 @@
 ﻿@using Zlagoda.Business.Entities;
+@using Zlagoda.Enums;
+@using Zlagoda.Services;
 @model Zlagoda.Models.ProductListViewModel;
+
+@{
+    var userRole = ClaimsService.GetUserFromClaims(Context.User).empl_role;
+}
 
 <style>
     .page-buttons {
@@ -64,7 +70,10 @@
         </div>
         <div class="col-12 col-xl-4" style="text-align: end">
             <!-- buttons -->
-            <a class="btn btn-sm btn-outline-dark page-buttons" asp-action="Create">Додати товар</a>
+            @if (userRole == nameof(UserRoles.Manager))
+            {
+                <a class="btn btn-sm btn-outline-dark page-buttons" asp-action="Create">Додати товар</a>
+            }
             <a class="btn btn-sm btn-outline-dark page-buttons" id="print-products">Друк товарів</a>
         </div>
     </div>
@@ -79,8 +88,11 @@
                     <th scope="col">Назва</th>
                     <th scope="col">Категорія</th>
                     <th scope="col">Характеристики</th>
-                    <th scope="col" style="width: 130px;" class="noprint">Редагувати</th>
-                    <th scope="col" style="width: 120px;" class="noprint">Видалити</th>
+                    @if (userRole == nameof(UserRoles.Manager))
+                    {
+                        <th scope="col" style="width: 130px;" class="noprint">Редагувати</th>
+                        <th scope="col" style="width: 120px;" class="noprint">Видалити</th>
+                    }
                 </tr>
             </thead>
             <tbody>
@@ -95,18 +107,21 @@
                         <td>@product.product_name</td>
                         <td>@product.category.category_name</td>
                         <td>@product.characteristics</td>
-                        <td class="noprint">
-                            <a class="btn btn-sm btn-outline-primary edit-delete-btn" asp-action="Edit" asp-route-id="@product.id_product">
-                                <i class="fa-solid fa-pen-to-square me-2"></i>
-                                Редагувати
-                            </a>
-                        </td>
-                        <td class="noprint">
-                            <a class="btn btn-sm btn-outline-danger edit-delete-btn" asp-action="Delete" asp-route-id="@product.id_product">
-                                <i class="fa-solid fa-trash me-2"></i>
-                                Видалити
-                            </a>
-                        </td>
+                        @if (userRole == nameof(UserRoles.Manager))
+                        {
+                            <td class="noprint">
+                                <a class="btn btn-sm btn-outline-primary edit-delete-btn" asp-action="Edit" asp-route-id="@product.id_product">
+                                    <i class="fa-solid fa-pen-to-square me-2"></i>
+                                    Редагувати
+                                </a>
+                            </td>
+                            <td class="noprint">
+                                <a class="btn btn-sm btn-outline-danger edit-delete-btn" asp-action="Delete" asp-route-id="@product.id_product">
+                                    <i class="fa-solid fa-trash me-2"></i>
+                                    Видалити
+                                </a>
+                            </td>
+                        }
                     </tr>
                 }
             </tbody>

@@ -2,7 +2,6 @@
 using Zlagoda.Attributes;
 using Zlagoda.Business.Entities;
 using Zlagoda.Business.Interfaces;
-using Zlagoda.Business.Repositories;
 using Zlagoda.Enums;
 using Zlagoda.Models;
 using Zlagoda.Services;
@@ -79,7 +78,7 @@ namespace Zlagoda.Controllers
 
         [HttpGet]
         [Route("store-products/delete/{id}")]
-        [JwtAuthorize]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
         public async Task<IActionResult> Delete(string id)
         {
             try
@@ -98,7 +97,7 @@ namespace Zlagoda.Controllers
 
         [HttpGet]
         [Route("store-products/create")]
-        [JwtAuthorize]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
         public async Task<IActionResult> Create()
         {
             try
@@ -125,7 +124,7 @@ namespace Zlagoda.Controllers
 
         [HttpPost]
         [Route("store-products/create")]
-        [JwtAuthorize]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
         public async Task<IActionResult> Create(CreateStoreProductViewModel model)
         {
             try
@@ -166,7 +165,7 @@ namespace Zlagoda.Controllers
 
         [HttpGet]
         [Route("store-products/edit/{id}")]
-        [JwtAuthorize]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
         public async Task<IActionResult> Edit(string id)
         {
             try
@@ -193,7 +192,7 @@ namespace Zlagoda.Controllers
 
         [HttpPost]
         [Route("store-products/edit/{id}")]
-        [JwtAuthorize]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
         public async Task<IActionResult> Edit(EditStoreProductViewModel model)
         {
             try

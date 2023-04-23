@@ -3,6 +3,7 @@ using Zlagoda.Attributes;
 using Zlagoda.Business.Entities;
 using Zlagoda.Business.Interfaces;
 using Zlagoda.Business.Repositories;
+using Zlagoda.Enums;
 using Zlagoda.Models;
 using Zlagoda.Services;
 
@@ -48,7 +49,7 @@ namespace Zlagoda.Controllers
 
         [HttpGet]
         [Route("clients/delete/{id}")]
-        [JwtAuthorize]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
         public async Task<IActionResult> Delete(string id)
         {
             try
@@ -67,7 +68,7 @@ namespace Zlagoda.Controllers
 
         [HttpGet]
         [Route("clients/create")]
-        [JwtAuthorize]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
         public IActionResult Create()
         {
             var model = new CreateClientViewModel
@@ -80,7 +81,7 @@ namespace Zlagoda.Controllers
 
         [HttpPost]
         [Route("clients/create")]
-        [JwtAuthorize]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
         public async Task<IActionResult> Create(CreateClientViewModel model)
         {
             try

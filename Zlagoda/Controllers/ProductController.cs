@@ -2,6 +2,7 @@
 using Zlagoda.Attributes;
 using Zlagoda.Business.Entities;
 using Zlagoda.Business.Interfaces;
+using Zlagoda.Enums;
 using Zlagoda.Models;
 
 namespace Zlagoda.Controllers
@@ -48,8 +49,28 @@ namespace Zlagoda.Controllers
         }
 
         [HttpGet]
+        [Route("products/delete/{id}")]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                await _productRepository.DeleteProductAsync(new Product { id_product = id });
+                return RedirectToAction("Index");
+            }
+            catch (Exception exception)
+            {
+                TempData["Errors"] = new List<string>
+                {
+                    exception.Message,
+                };
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
         [Route("products/create")]
-        [JwtAuthorize]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
         public async Task<IActionResult> Create()
         {
             var categories = await _categoryRepository.GetAllCategoriesOrderedByNameAsync();
@@ -63,7 +84,7 @@ namespace Zlagoda.Controllers
 
         [HttpPost]
         [Route("products/create")]
-        [JwtAuthorize]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
         public async Task<IActionResult> Create(CreateProductViewModel model)
         {
             try
@@ -86,7 +107,7 @@ namespace Zlagoda.Controllers
 
         [HttpGet]
         [Route("products/edit/{id}")]
-        [JwtAuthorize]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
         public async Task<IActionResult> Edit(int id)
         {
             try
@@ -113,7 +134,7 @@ namespace Zlagoda.Controllers
 
         [HttpPost]
         [Route("products/edit/{id}")]
-        [JwtAuthorize]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
         public async Task<IActionResult> Edit(EditProductViewModel model)
         {
             try

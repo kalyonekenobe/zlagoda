@@ -1,5 +1,11 @@
 ﻿@using Zlagoda.Business.Entities;
+@using Zlagoda.Enums;
+@using Zlagoda.Services;
 @model Zlagoda.Models.ClientListViewModel
+
+@{
+    var userRole = ClaimsService.GetUserFromClaims(Context.User).empl_role;
+}
 
 <style>
     .page-buttons {
@@ -44,7 +50,10 @@
         </div>
         <div class="col-12 col-xl-4" style="text-align: end">
             <!-- buttons -->
-            <a class="btn btn-sm btn-outline-dark page-buttons" asp-action="Create">Додати клієнта</a>
+            @if (userRole == nameof(UserRoles.Manager))
+            {
+                <a class="btn btn-sm btn-outline-dark page-buttons" asp-action="Create">Додати клієнта</a>
+            }
             <a class="btn btn-sm btn-outline-dark page-buttons" id="print-clients">Друк клієнтів</a>
         </div>
     </div>
@@ -62,7 +71,10 @@
                     <th scope="col">Телефон</th>
                     <th scope="col">Адреса</th>
                     <th scope="col" style="width: 130px;" class="noprint">Редагувати</th>
-                    <th scope="col" style="width: 120px;" class="noprint">Видалити</th>
+                    @if (userRole == nameof(UserRoles.Manager))
+                    {
+                        <th scope="col" style="width: 120px;" class="noprint">Видалити</th>
+                    }
                 </tr>
             </thead>
             <tbody>
@@ -85,12 +97,15 @@
                                 Редагувати
                             </a>
                         </td>
-                        <td class="noprint">
-                            <a class="btn btn-sm btn-outline-danger edit-delete-btn" asp-action="Delete" asp-route-id="@client.card_number">
-                                <i class="fa-solid fa-trash me-2"></i>
-                                Видалити
-                            </a>
-                        </td>
+                        @if (userRole == nameof(UserRoles.Manager))
+                        {
+                            <td class="noprint">
+                                <a class="btn btn-sm btn-outline-danger edit-delete-btn" asp-action="Delete" asp-route-id="@client.card_number">
+                                    <i class="fa-solid fa-trash me-2"></i>
+                                    Видалити
+                                </a>
+                            </td>
+                        }
                     </tr>
                 }
             </tbody>
