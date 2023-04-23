@@ -9,7 +9,7 @@ namespace Zlagoda.Business.Interfaces
 		Task<Employee> DeleteEmployeeAsync(Employee employee);
 		Task<IEnumerable<Employee>> GetAllEmployeesOrderedBySurnameAsync();
 		Task<IEnumerable<Employee>> GetAllEmployeesCashiersOrderedBySurnameAsync();
-		Task<dynamic> GetEmployeePhoneAndAddressBySurnameAsync(string surname);
+		Task<IEnumerable<dynamic>> GetEmployeesPhoneAndAddressBySurnameAsync(string surname);
 		Task<Employee> GetEmployeeByIdAsync(string id);
 		Task<Employee> GetEmployeeByPhoneAsync(string phone);
 	}

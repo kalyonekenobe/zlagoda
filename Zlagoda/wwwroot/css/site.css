@@ -75,7 +75,7 @@ body {
     width: 100%;
     border-radius: 4px 0px 0px 4px;
     padding: 5px 10px;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     box-shadow: none;
     border: 2px solid silver;
     background: transparent;
@@ -147,10 +147,18 @@ body {
     box-sizing: border-box;
     color: #333333;
     background: #f6f6f6;
-    user-select: none;
 }
 
 .user-details .row > div > label {
     color: gray;
     margin-bottom: 2px;
+}
+
+.product-tag {
+    padding: 1px 5px;
+    color: white;
+    border-radius: 5px;
+    display: inline-flex;
+    font-size: 0.8rem;
+    font-weight: 500;
 }

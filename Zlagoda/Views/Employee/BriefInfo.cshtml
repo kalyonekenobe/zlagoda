@@ -1,0 +1,34 @@
+﻿<div class="container pt-4 user-details">
+    <div class="row mb-3 mt-2">
+        <div class="col d-flex justify-content-between align-items-center flex-nowrap">
+            <h4 class="text-start w-100">Коротка інформація про працівників з прізвищем: @Model.Surname</h4>
+            <a asp-action="Index" class="btn btn-sm btn-secondary d-inline" style="min-width: 100px;">Назад</a>
+        </div>
+    </div>
+    @foreach (var employee in Model.Employees)
+    {
+        <div class="row g-2">
+            <h5>@employee.empl_surname @employee.empl_name @employee.empl_patronymic</h5>
+            <div class="col-6">
+                <label>Номер телефону</label>
+                <br>
+                <span>@employee.phone_number</span>
+            </div>
+            <div class="col-6">
+                <label>Місто</label>
+                <br>
+                <span>@employee.city</span>
+            </div>
+            <div class="col-6">
+                <label>Вулиця</label>
+                <br>
+                <span>@employee.street</span>
+            </div>
+            <div class="col-6">
+                <label>Поштовий індекс</label>
+                <br>
+                <span>@employee.zip_code</span>
+            </div>
+        </div>
+    }
+</div>

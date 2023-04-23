@@ -1,6 +1,6 @@
-﻿let modelsToPrint = ['employees', 'categories', 'clients', 'products'];
+﻿let models = ['employees', 'categories', 'clients', 'products', 'store-products'];
 
-modelsToPrint.forEach(modelName => {
+models.forEach(modelName => {
     let printButton = document.getElementById(`print-${modelName}`);
     if (printButton) {
         printButton.onclick = event => {
@@ -8,6 +8,15 @@ modelsToPrint.forEach(modelName => {
             if (table) {
                 window.print();
             }
+        }
+    }
+
+    let findModelDetailsInput = document.getElementById(`get-${modelName}-info-input`);
+    let button = document.getElementById(`get-${modelName}-info-btn`);
+    if (findModelDetailsInput && button) {
+        findModelDetailsInput.oninput = event => {
+            let value = event.target.value;
+            button.setAttribute('href', `brief-info/${value}`);
         }
     }
 });

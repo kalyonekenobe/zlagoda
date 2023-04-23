@@ -16,6 +16,10 @@ namespace Zlagoda.Business.Repositories
 
         public async Task<StoreProduct> CreateStoreProductAsync(StoreProduct storeProduct)
         {
+            if (!await CanCreateStoreProduct(storeProduct))
+            {
+                throw new Exception("Cannot create more than 2 store products for the same product!");
+            }
             string query = @"INSERT INTO Store_Product
                              (UPC, UPC_prom, id_product, selling_price, products_number, promotional_product)
                              VALUES
@@ -279,19 +283,38 @@ namespace Zlagoda.Business.Repositories
         public async Task<StoreProduct> GetStoreProductByUPCAsync(string upc)
         {
             string query = @"SELECT *
-                             FROM Store_Product
-                             WHERE UPC=@UPC";
+                             FROM Store_Product SP
+                             INNER JOIN Product P
+                             ON SP.id_product=P.id_product
+                             WHERE SP.UPC=@UPC";
             using (var connection = new SqlConnection(_connectionString))
             {
-                var storeProduct = await connection.QueryFirstOrDefaultAsync<StoreProduct>(query, new
+                var result = await connection.QueryFirstOrDefaultAsync(query, new
                 {
                     UPC = upc,
                 });
 
-                if (storeProduct is null)
+                if (result is null)
                 {
                     throw new Exception("Error when fetching store product by UPC!");
                 }
+
+                var storeProduct = new StoreProduct
+                {
+                    UPC = result.UPC,
+                    UPC_prom = result.UPC_prom,
+                    id_product = result.id_product,
+                    selling_price = result.selling_price,
+                    products_number = result.products_number,
+                    promotional_product = result.promotional_product,
+                    product = new Product
+                    {
+                        id_product = result.id_product,
+                        category_number = result.category_number,
+                        product_name = result.product_name,
+                        characteristics = result.characteristics,
+                    },
+                };
 
                 return storeProduct;
             }
@@ -365,6 +388,19 @@ namespace Zlagoda.Business.Repositories
                 }
 
                 return storeProduct;
+            }
+        }
+
+        private async Task<bool> CanCreateStoreProduct(StoreProduct storeProduct)
+        {
+            string query = @"(SELECT COUNT(*) FROM Product WHERE id_product=@IdProduct)";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var result = await connection.ExecuteScalarAsync<int>(query, new
+                {
+                    IdProduct = storeProduct.id_product,
+                });
+                return result <= 2;
             }
         }
     }

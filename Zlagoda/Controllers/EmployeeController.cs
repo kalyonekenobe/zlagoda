@@ -2,6 +2,7 @@
 using Zlagoda.Attributes;
 using Zlagoda.Business.Entities;
 using Zlagoda.Business.Interfaces;
+using Zlagoda.Business.Repositories;
 using Zlagoda.Enums;
 using Zlagoda.Models;
 using Zlagoda.Services;
@@ -11,12 +12,14 @@ namespace Zlagoda.Controllers
     public class EmployeeController : Controller
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly PasswordService _passwordService;
 
-        public EmployeeController(IEmployeeRepository employeeRepository)
+        public EmployeeController(IEmployeeRepository employeeRepository, IHttpContextAccessor httpContextAccessor)
         {
             _employeeRepository = employeeRepository;
             _passwordService = new PasswordService();
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
@@ -178,6 +181,32 @@ namespace Zlagoda.Controllers
                     exception.Message,
                 };
                 return RedirectToAction("Index", "Home");
+            }
+        }
+
+        [HttpGet]
+        [Route("employees/brief-info/{surname}")]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
+        public async Task<IActionResult> BriefInfo(string surname)
+        {
+            try
+            {
+                var query = await _employeeRepository.GetEmployeesPhoneAndAddressBySurnameAsync(surname);
+                var model = new
+                {
+                    Title = "Employee brief info",
+                    Employees = query,
+                    Surname = surname,
+                };    
+                return View("BriefInfo", model);
+            }
+            catch (Exception exception)
+            {
+                TempData["Errors"] = new List<string>
+                {
+                    exception.Message,
+                };
+                return RedirectToAction("Index");
             }
         }
     }

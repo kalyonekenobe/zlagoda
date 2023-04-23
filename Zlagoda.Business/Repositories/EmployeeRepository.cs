@@ -139,19 +139,20 @@ namespace Zlagoda.Business.Repositories
             }
         }
 
-        public async Task<dynamic> GetEmployeePhoneAndAddressBySurnameAsync(string surname)
+        public async Task<IEnumerable<dynamic>> GetEmployeesPhoneAndAddressBySurnameAsync(string surname)
         {
-            string query = @"SELECT phone_number, city, street, zip_code 
+            string query = @"SELECT phone_number, city, street, zip_code, 
+                             empl_surname, empl_name, empl_patronymic
                              FROM Employee 
                              WHERE empl_surname=@EmplSurname";
             using (var connection = new SqlConnection(_connectionString))
             {
-                var result = await connection.QueryFirstOrDefaultAsync(query, new
+                var result = await connection.QueryAsync(query, new
                 {
                     EmplSurname = surname,
                 });
 
-                if (result is null)
+                if (result.Count() == 0)
                 {
                     throw new Exception("Error when fetching employee phone and address by surname!");
                 }

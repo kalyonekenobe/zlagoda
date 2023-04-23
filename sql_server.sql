@@ -103,3 +103,15 @@ CREATE TABLE Sale (
 --    UPDATE Store_Product SET UPC_prom=NULL WHERE UPC_prom IN (SELECT UPC FROM DELETED);
 --    DELETE FROM Store_Product WHERE UPC IN (SELECT UPC FROM DELETED);
 --END;
+
+--CREATE OR ALTER TRIGGER Store_Product_UPDATE_CASCADE 
+--ON Store_Product FOR UPDATE
+--AS 
+--BEGIN
+--    SET NOCOUNT ON
+--    IF UPDATE(UPC)
+--	BEGIN
+--	    WITH new_t AS (SELECT I.UPC as i_UPC, D.UPC as d_UPC FROM inserted I INNER JOIN deleted D ON I.id_product=D.id_product)
+--		MERGE INTO Store_Product SP USING new_t D ON SP.UPC_prom=D.d_UPC WHEN MATCHED THEN UPDATE SET SP.UPC_prom=D.i_UPC;
+--	END;
+--END;
