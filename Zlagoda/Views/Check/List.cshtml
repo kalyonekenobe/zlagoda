@@ -1,0 +1,164 @@
+﻿@using Zlagoda.Business.Entities;
+@using Zlagoda.Enums;
+@using Zlagoda.Services;
+@model Zlagoda.Models.CheckListViewModel;
+
+@{
+    var userRole = ClaimsService.GetUserFromClaims(Context.User).empl_role;
+}
+
+<style>
+    .page-buttons {
+        border: 2px solid;
+        font-weight: 500;
+        max-width: 175px;
+        width: 100%;
+    }
+
+    .table-responsive {
+        margin: 20px 0 40px 0;
+    }
+</style>
+<div class="container-fluid pt-4">
+    <div class="error-list mb-2">
+        @foreach (var error in Model.Errors)
+        {
+            <span class="error">@error<i class="fa-solid fa-xmark close"></i></span>
+        }
+    </div>
+    <div class="row mb-3">
+        <div class="col d-flex justify-content-between align-items-center flex-nowrap">
+            <h4 class="text-start w-100">Список чеків</h4>
+            <a asp-action="Index" asp-controller="Home" class="btn btn-sm btn-secondary" style="min-width: 100px;">Назад</a>
+        </div>
+    </div>
+    <div class="row justify-content-between align-items-end noprint">
+        <div class="col-12 col-xl-8 search-container flex-wrap flex-md-nowrap">
+            <!-- dropdown -->
+            <div class="dropdown col-12 col-md-3 col-xl-2 me-2">
+                <label>Показати товари</label>
+                <br>
+                <div class="btn-group w-100">
+                    <button class="btn btn-sm dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @{
+                            var urlPromo = Context.Request.Query["promo"].FirstOrDefault();
+                            string selectedPromoFilter = "Усі товари";
+                            if (urlPromo == "true")
+                                selectedPromoFilter = "Товари зі знижкою";
+                            if (urlPromo == "false")
+                                selectedPromoFilter = "Товари без знижки";
+
+                        }
+                        @selectedPromoFilter
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" asp-route-promo="">
+                                Усі товари
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" asp-route-promo="true">
+                                Товари зі знижкою
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" asp-route-promo="false">
+                                Товари без знижки
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="dropdown col-12 col-md-3 col-xl-2 me-2">
+                <label>Сортувати за</label>
+                <br>
+                <div class="btn-group w-100">
+                    <button class="btn btn-sm dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @{
+                            var urlSorting = Context.Request.Query["sorting"].FirstOrDefault();
+                            string selectedSortingFilter = "За назвою";
+                            if (urlSorting == "quantity")
+                                selectedSortingFilter = "За кількістю";
+                            else
+                                selectedSortingFilter = "За назвою";
+                        }
+                        @selectedSortingFilter
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" asp-route-sorting="" >
+                                За назвою
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" asp-route-sorting="quantity" >
+                                За кількістю
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="d-inline-flex col-12 col-md-6 col-xl-8 flex-column" style="margin-top: 1px;">
+                <label>Отримати інформацію про товар за UPC</label>
+                <div class="form-group d-inline-flex w-100">
+                    <input type="text" class="form-control search w-100" id="get-store-products-info-input" placeholder="UPC товару" required>
+                    <a class="btn btn-dark search-btn" id="get-store-products-info-btn" style="min-width: 180px;" href="">Отримати інформацію</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-4" style="text-align: end">
+            <!-- buttons -->
+            @if (userRole == nameof(UserRoles.Cashier))
+            {
+                <a class="btn btn-sm btn-outline-dark page-buttons" asp-action="Create">Створити чек</a>
+            }
+            <a class="btn btn-sm btn-outline-dark page-buttons" id="print-store-products">Друк усіх чеків</a>
+        </div>
+
+    </div>
+
+
+    <!-- TABLE -->
+    <div class="table-responsive">
+        <table class="table table-striped table-sm printable" id="store-products-table">
+            <thead>
+                <tr>
+                    <th scope="col">Номер чеку</th>
+                    <th scope="col">Касир</th>
+                    <th scope="col">Номер карти клієнта</th>
+                    <th scope="col">Дата</th>
+                    <th scope="col">Загальна сума</th>
+                    <th scope="col">ПДВ</th>
+                    @if (userRole == nameof(UserRoles.Manager))
+                    {
+                        <th scope="col" style="width: 120px;" class="noprint">Видалити</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var check in Model.Checks)
+                {
+                    <tr>
+                        <td>@check.check_number</td>
+                        <td>@check.employee?.empl_surname @check.employee?.empl_name @check.employee?.empl_patronymic</td>
+                        <td>@(check.card_number ?? "Відсутній")</td>
+                        <td>@check.print_date.ToString("dd/MM/yyyy")</td>
+                        <td>@check.sum_total.ToString("0.00")$</td>
+                        <td>@check.vat.ToString("0.00")$</td>
+                        @if (userRole == nameof(UserRoles.Manager))
+                        {
+                            <td class="noprint">
+                                <a class="btn btn-sm btn-outline-danger edit-delete-btn" asp-action="Delete" asp-route-id="@check.check_number">
+                                    <i class="fa-solid fa-trash me-2"></i>
+                                    Видалити
+                                </a>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

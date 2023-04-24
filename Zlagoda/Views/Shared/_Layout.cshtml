@@ -1,4 +1,9 @@
-﻿@using Zlagoda.Services;
+﻿@using Zlagoda.Enums;
+@using Zlagoda.Services;
+
+@{
+    var user = ClaimsService.GetUserFromClaims(Context.User);
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -30,30 +35,52 @@
                             <li class="nav-item">
                                 <a class="nav-link active" aria-current="page" asp-controller="Home" asp-action="Index">Головна</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-action="Index" asp-controller="Employees">Працівники</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-action="Index" asp-controller="Client">Клієнти</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-action="Index" asp-controller="Category">Категорії</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-action="Index" asp-controller="Product">Товари</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-action="Index" asp-controller="StoreProduct">Товари в магазині</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" href="#">Чеки</a>
-                            </li>
+                            @if (user.empl_role == nameof(UserRoles.Manager)){
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-action="Index" asp-controller="Employees">Працівники</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-action="Index" asp-controller="Client">Клієнти</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-action="Index" asp-controller="Category">Категорії</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-action="Index" asp-controller="Product">Товари</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-action="Index" asp-controller="StoreProduct">Товари в магазині</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-action="Index" asp-controller="Check">Чеки</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-action="Index" asp-controller="Check">Чеки</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-action="Index" asp-controller="Client">Клієнти</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-action="Index" asp-controller="Product">Товари</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-action="Index" asp-controller="StoreProduct">Товари в магазині</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-action="Index" asp-controller="Check">Чеки</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-white" asp-action="Details" asp-controller="Employee" asp-route-id="@user.id_employee">Про мене</a>
+                                </li>
+                            }
                         </ul>
                     </div>
                 </div>
                 <div class="additional-buttons d-flex justify-content-end align-items-center" style="min-width: 320px;">
                     @{
-                        var user = ClaimsService.GetUserFromClaims(Context.User);
                         if (Context.User.Claims.Count() == 0)
                             user = null;
                     }

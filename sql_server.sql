@@ -73,7 +73,7 @@ CREATE TABLE [Check] (
     check_number            VARCHAR(10) NOT NULL,
     id_employee             VARCHAR(10) NOT NULL,
     card_number             VARCHAR(13),
-    print_date              TIMESTAMP NOT NULL,
+    print_date              DATETIME NOT NULL,
     sum_total               DECIMAL(13, 4) NOT NULL,
     vat                     DECIMAL(13, 4) NOT NULL,
 

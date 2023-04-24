@@ -1,4 +1,4 @@
-﻿let models = ['employees', 'categories', 'clients', 'products', 'store-products'];
+﻿let models = ['employees', 'categories', 'clients', 'products', 'store-products', 'checks'];
 
 models.forEach(modelName => {
     let printButton = document.getElementById(`print-${modelName}`);
@@ -21,11 +21,15 @@ models.forEach(modelName => {
     }
 });
 
-let closeErrorButtons = document.querySelectorAll(".error .close");
-closeErrorButtons.forEach(button => button.onclick = event => {
-    let parent = button.parentElement;
-    parent.style.display = "none";
-});
+let addCloseButtonsClickEvents = () => {
+    let closeErrorButtons = document.querySelectorAll(".error .close");
+    closeErrorButtons.forEach(button => button.onclick = event => {
+        let parent = button.parentElement;
+        parent.style.display = "none";
+    });
+}
+
+addCloseButtonsClickEvents();
 
 let storeProductTypeSelector = document.querySelector('.store-product-type-selector');
 if (storeProductTypeSelector) {
@@ -42,4 +46,148 @@ if (storeProductTypeSelector) {
             }
         })
     });
+}
+
+let storeProductSelect = document.getElementById('store-product-select');
+if (storeProductSelect) {
+    let updateQuantityInputAttributes = async () => {
+        let quantityInput = document.getElementById('store-product-quantity');
+        let url = location.href.replace('checks/create', 'api/store-products');
+        await fetch(url).then(async response => await response.json()).then(result => {
+            let selectedProduct = storeProductSelect.value;
+            let maxQuantity = result.find(product => product.UPC === selectedProduct).products_number;
+            quantityInput.setAttribute('max', maxQuantity);
+        });
+    }
+    updateQuantityInputAttributes().then(async () => {
+        storeProductSelect.onchange = async event => {
+            await updateQuantityInputAttributes();
+        }
+    });
+}
+
+let checkStoreProductQuantityInput = document.getElementById('store-product-quantity');
+if (checkStoreProductQuantityInput) {
+    checkStoreProductQuantityInput.oninput = event => {
+        let max = checkStoreProductQuantityInput.getAttribute('max');
+        checkStoreProductQuantityInput.value = Math.min(event.target.value, max);
+    }
+}
+
+let createCheckButton = document.getElementById('create-check-button');
+let checkProducts = [];
+
+let addStoreProductToCheckButton = document.getElementById('add-product-to-check-btn');
+if (addStoreProductToCheckButton) {
+    let totalCheckSum = document.getElementById('total-check-sum');
+    addStoreProductToCheckButton.onclick = async event => {
+        let productInput = document.getElementById('store-product-select');
+        let quantityInput = document.getElementById('store-product-quantity');
+        let checkProductsTable = document.getElementById('check-products-table');
+        if (productInput.value && quantityInput.value && quantityInput.value > 0) {
+            let url = location.href.replace('checks/create', 'api/store-products');
+            await fetch(url).then(async response => await response.json()).then(result => {
+                let checkProduct = result.find(product => product.UPC === productInput.value);
+                if (checkProduct) {
+                    let row = checkProductsTable.querySelector(`tr[data-product-upc='${checkProduct.UPC}']`);
+                    if (!row) {
+                        checkProduct.product_number = Number.parseInt(quantityInput.value);
+                        checkProducts.push(checkProduct);
+                        row = checkProductsTable.insertRow();
+                        row.setAttribute('data-row-id', checkProductsTable.rows.length - 1);
+                        row.setAttribute('data-product-upc', checkProduct.UPC);
+                    } else {
+                        checkProduct = checkProducts.find(product => product.UPC === checkProduct.UPC);
+                        checkProduct.product_number += Number.parseInt(quantityInput.value);
+                    }
+                    row.innerHTML = `
+                        <td>${checkProduct.product.product_name}</td>
+                        <td>${checkProduct.product.category.category_name}</td>
+                        <td>
+                            ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(checkProduct.selling_price).replace(',', ' ')}$
+                        </td>
+                        <td>${checkProduct.product_number} шт.</td>
+                        <td>
+                            ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(checkProduct.product_number * checkProduct.selling_price).replace(',', ' ') }$
+                        </td>
+                        <td width="112">
+                            <a class="btn btn-sm btn-outline-danger delete-btn">
+                                <i class="fa-solid fa-trash me-2"></i>
+                                Видалити
+                            </a>
+                        </td>
+                    `;
+                    let totalSum = checkProducts.reduce((partialSum, item) => partialSum + (item.product_number * item.selling_price), 0);
+                    let deleteButton = row.querySelector('.delete-btn');
+                    if (deleteButton) {
+                        deleteButton.onclick = event => {
+                            checkProducts = checkProducts.filter(product => product.UPC !== row.dataset.productUpc);
+                            totalSum = checkProducts.reduce((partialSum, item) => partialSum + (item.product_number * item.selling_price), 0);
+                            checkProductsTable.deleteRow(row.dataset.rowId);
+                            totalCheckSum.innerHTML = `${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalSum).replace(',', ' ')}$`;
+                            if (checkProducts.length === 0) {
+                                createCheckButton.setAttribute('disabled', true);
+                            }
+                        }
+                    }
+                    if (checkProducts.length > 0) {
+                        createCheckButton.removeAttribute('disabled');
+                    }
+                    quantityInput.value = 1;
+                    totalCheckSum.innerHTML = `${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalSum).replace(',', ' ') }$`;
+                }
+            });
+        }
+    }
+}
+
+let createCheckForm = document.getElementById('create-check-form');
+if (createCheckForm) {
+    createCheckForm.onsubmit = async event => {
+        event.preventDefault();
+        let checkNumber = document.getElementById('Check_check_number').value;
+        let cardNumber = document.getElementById('Check_card_number').value;
+        let idEmployee = document.getElementById('Check_id_employee').value;
+        if (checkNumber && idEmployee) {
+            let check = {
+                "check_number": checkNumber,
+                "id_employee": idEmployee,
+                "card_number": cardNumber,
+                "print_date": new Date().toISOString().split('T')[0],
+                "total_sum": 0,
+                "vat": 0,
+                "products": checkProducts
+            };
+            fetch(location.href, {
+                method: "POST",
+                body: JSON.stringify(check),
+                headers: {
+                    'Accept': 'application/json; charset=utf-8',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                },
+            }).then(async response => {
+                if (response.ok) {
+                    checkProducts = [];
+                    let url = location.href.replace('checks/create', 'checks/list');
+                    location.replace(url);
+                } else {
+                    let errors = await response.json();
+                    errors.forEach(error => {
+                        let errorElement = document.createElement('span');
+                        errorElement.classList.add('error');
+                        errorElement.innerHTML = error;
+                        let closeErrorElement = document.createElement('i');
+                        closeErrorElement.classList.add('fa-solid');
+                        closeErrorElement.classList.add('fa-xmark');
+                        closeErrorElement.classList.add('close');
+                        errorElement.appendChild(closeErrorElement);
+                        createCheckForm.insertBefore(errorElement, createCheckForm.firstChild);
+                        addCloseButtonsClickEvents();
+                    })
+                }
+            }).catch(error => {
+                console.log(error);
+            });
+        }
+    }
 }

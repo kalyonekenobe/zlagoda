@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Zlagoda.Attributes;
 using Zlagoda.Business.Entities;
 using Zlagoda.Business.Interfaces;
@@ -254,6 +255,15 @@ namespace Zlagoda.Controllers
                 };
                 return RedirectToAction("Index");
             }
+        }
+
+        [HttpGet]
+        [Route("api/store-products")]
+        [JwtAuthorize]
+        public async Task<string> ApiFetchAllStoreProducts()
+        {
+            var storeProducts = await _storeProductRepository.GetAllStoreProductsOrderedByNameAsync();
+            return JsonConvert.SerializeObject(storeProducts, Formatting.Indented);
         }
     }
 }

@@ -16,7 +16,8 @@ namespace Zlagoda.Business.Repositories
 
         public async Task<Check> CreateCheckAsync(Check check)
         {
-            string query = @"INSERT INTO Check
+            string query = @"INSERT 
+                             INTO [Check]
                              (check_number, id_employee, card_number, print_date, sum_total, vat)
                              VALUES 
                              (@CheckNumber, @IdEmployee, @CardNumber, @PrintDate, @SumTotal, @Vat)";
@@ -44,7 +45,7 @@ namespace Zlagoda.Business.Repositories
         public async Task<Check> DeleteCheckAsync(Check check)
         {
             string query = @"DELETE
-                             FROM Check
+                             FROM [Check]
                              WHERE check_number=@CheckNumber";
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -64,26 +65,25 @@ namespace Zlagoda.Business.Repositories
 
         public async Task<IEnumerable<Check>> GetAllChecksAsync()
         {
-            string query = @"SELECT C.check_number, C.card_number, C.id_employee, 
-                             C.print_date, C.sum_total, C.vat,
+            string query = @"SELECT C.*,
                              S.UPC, S.product_number, S.selling_price as store_product_total_price,
                              SP.UPC_prom, SP.id_product, SP.selling_price as store_product_price,
-                             SP.products_number, SP.promotional_product, P.category_number, 
-                             P.product_name, P.characteristics
-                             FROM Check C
+                             SP.products_number, SP.promotional_product, P.*, E.*
+                             FROM [Check] C
                              INNER JOIN Sale S
                              ON C.check_number=S.check_number
                              INNER JOIN Store_Product SP
                              ON S.UPC=SP.UPC
                              INNER JOIN Product P
                              ON P.id_product=SP.id_product
-                             WHERE C.check_number=@CheckNumber
+                             INNER JOIN Employee E
+                             ON C.id_employee=E.id_employee
                              ORDER BY C.check_number";
             using (var connection = new SqlConnection(_connectionString))
             {
                 var result = await connection.QueryAsync(query);
                 List<Check> checks = new List<Check>();
-                int previousCheckId = -1;
+                string previousCheckId = "-1";
                 foreach (var item in result)
                 {
                     if (item.check_number != previousCheckId)
@@ -100,6 +100,12 @@ namespace Zlagoda.Business.Repositories
                     checks[checks.Count - 1].sum_total = item.sum_total;
                     checks[checks.Count - 1].vat = item.vat;
                     checks[checks.Count - 1].sales.Add(convertObjectToSale(item));
+                    checks[checks.Count - 1].employee = new Employee
+                    {
+                        empl_surname = item.empl_surname,
+                        empl_name = item.empl_name,
+                        empl_patronymic = item.empl_patronymic,
+                    };
                 }
 
                 return checks;
@@ -114,7 +120,7 @@ namespace Zlagoda.Business.Repositories
                              SP.UPC_prom, SP.id_product, SP.selling_price as store_product_price,
                              SP.products_number, SP.promotional_product, P.category_number, 
                              P.product_name, P.characteristics
-                             FROM Check C
+                             FROM [Check] C
                              INNER JOIN Sale S
                              ON C.check_number=S.check_number
                              INNER JOIN Store_Product SP
@@ -162,7 +168,7 @@ namespace Zlagoda.Business.Repositories
                              SP.UPC_prom, SP.id_product, SP.selling_price as store_product_price,
                              SP.products_number, SP.promotional_product, P.category_number, 
                              P.product_name, P.characteristics
-                             FROM Check C
+                             FROM [Check] C
                              INNER JOIN Sale S
                              ON C.check_number=S.check_number
                              INNER JOIN Store_Product SP
@@ -211,7 +217,7 @@ namespace Zlagoda.Business.Repositories
                              SP.UPC_prom, SP.id_product, SP.selling_price as store_product_price,
                              SP.products_number, SP.promotional_product, P.category_number, 
                              P.product_name, P.characteristics
-                             FROM Check C
+                             FROM [Check] C
                              INNER JOIN Sale S
                              ON C.check_number=S.check_number
                              INNER JOIN Store_Product SP
@@ -259,7 +265,7 @@ namespace Zlagoda.Business.Repositories
                              SP.UPC_prom, SP.id_product, SP.selling_price as store_product_price,
                              SP.products_number, SP.promotional_product, P.category_number, 
                              P.product_name, P.characteristics
-                             FROM Check C
+                             FROM [Check] C
                              INNER JOIN Sale S
                              ON C.check_number=S.check_number
                              INNER JOIN Store_Product SP
