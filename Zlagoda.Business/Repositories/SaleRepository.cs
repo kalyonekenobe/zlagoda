@@ -45,8 +45,8 @@ namespace Zlagoda.Business.Repositories
 			string query = @"SELECT SUM(product_number) 
 							 FROM Sale 
 						     WHERE UPC=@UPC AND check_number IN (SELECT check_number 
-																 FROM [Check] 
-																 WHERE print_date BETWEEN @StartDate AND @EndDate)";
+													FROM [Check] 
+													WHERE print_date BETWEEN @StartDate AND @EndDate)";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				return await connection.ExecuteScalarAsync<int>(query, new

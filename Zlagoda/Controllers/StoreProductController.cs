@@ -14,12 +14,14 @@ namespace Zlagoda.Controllers
         private readonly IProductRepository _productRepository;
         private readonly IStoreProductRepository _storeProductRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ISaleRepository _saleRepository;
 
-        public StoreProductController(IProductRepository productRepository, IStoreProductRepository storeProductRepository, IHttpContextAccessor httpContextAccessor)
+        public StoreProductController(IProductRepository productRepository, IStoreProductRepository storeProductRepository, ISaleRepository saleRepository, IHttpContextAccessor httpContextAccessor)
         {
             _productRepository = productRepository;
             _storeProductRepository = storeProductRepository;
             _httpContextAccessor = httpContextAccessor;
+            _saleRepository = saleRepository;
         }
 
         [HttpGet]
@@ -217,7 +219,7 @@ namespace Zlagoda.Controllers
         [HttpGet]
         [Route("store-products/brief-info/{id}")]
         [JwtAuthorize]
-        public async Task<IActionResult> BriefInfo(string id)
+        public async Task<IActionResult> BriefInfo(string id, [FromQuery(Name = "start-date")] string? startDate = null, [FromQuery(Name = "end-date")] string? endDate = null)
         {
             try
             {
@@ -225,6 +227,17 @@ namespace Zlagoda.Controllers
                 dynamic model;
                 if (user.empl_role == nameof(UserRoles.Manager))
                 {
+                    var soldInPeriodQuantity = -1;
+                    if (startDate is not null && endDate is not null)
+                    {
+                        DateTime dateStart, dateEnd;
+                        bool dateStartExists = DateTime.TryParse(startDate, out dateStart);
+                        bool dateEndExists = DateTime.TryParse(endDate, out dateEnd);
+                        if (dateStartExists && dateEndExists)
+                        {
+                            soldInPeriodQuantity = await _saleRepository.GetTotalQuantityOfStoreProductSoldDuringPeriodAsync(new StoreProduct { UPC = id }, dateStart, dateEnd);
+                        }
+                    }
                     var query = await _storeProductRepository.GetStoreProductPriceQuantityNameAndCharacteristicsByUPCAsync(id);
                     model = new
                     {
@@ -232,6 +245,7 @@ namespace Zlagoda.Controllers
                         ProductsNumber = query.products_number,
                         Price = query.selling_price,
                         ProductName = query.product_name,
+                        SoldInPeriodQuantity = soldInPeriodQuantity,
                         Characteristics = query.characteristics,
                     };
                 }

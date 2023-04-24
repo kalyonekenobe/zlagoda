@@ -49,4 +49,32 @@
             </div>
         }
     </div>
+    @if (user.empl_role == nameof(UserRoles.Manager))
+    {
+        <div class="row mt-5">
+            <div class="col d-flex justify-content-between align-items-center flex-nowrap">
+                <h5 class="text-start w-100">Кількість товару проданого за даний період: @(Model.SoldInPeriodQuantity == -1 ? "" : Model.SoldInPeriodQuantity.ToString() + " шт.")</h5>
+            </div>
+        </div>
+        <form method="GET" asp-action="BriefInfo">
+            <div class="row g-2">
+                @{
+                    var urlStartDate = Context.Request.Query["start-date"].FirstOrDefault();
+                    var urlEndDate = Context.Request.Query["end-date"].FirstOrDefault();
+                    DateTime? startDate, endDate;
+                    startDate = urlStartDate is not null && urlStartDate != "" ? DateTime.Parse(urlStartDate) : null;
+                    endDate = urlEndDate is not null && urlEndDate != "" ? DateTime.Parse(urlEndDate) : null;
+                }
+                <div class="col-5">
+                    <input type="date" class="form-control" value="@startDate?.ToString("yyyy-MM-dd")" name="start-date" id="start-date" required>
+                </div>
+                <div class="col-5">
+                    <input type="date" class="form-control" value="@endDate?.ToString("yyyy-MM-dd")" name="end-date" id="start-date" required>
+                </div>
+                <div class="col-2">
+                    <button type="submit" class="form-control btn btn-dark">Застосувати</button>
+                </div>
+            </div>
+        </form>
+    }
 </div>
