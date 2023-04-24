@@ -93,7 +93,6 @@ namespace Zlagoda.Business.Repositories
                     }
 
                     checks[checks.Count - 1].check_number = item.check_number;
-                    checks[checks.Count - 1].check_number = item.check_number;
                     checks[checks.Count - 1].id_employee = item.id_employee;
                     checks[checks.Count - 1].card_number = item.card_number;
                     checks[checks.Count - 1].print_date = item.print_date;
@@ -146,7 +145,6 @@ namespace Zlagoda.Business.Repositories
                         previousCheckId = item.check_number;
                     }
 
-                    checks[checks.Count - 1].check_number = item.check_number;
                     checks[checks.Count - 1].check_number = item.check_number;
                     checks[checks.Count - 1].id_employee = item.id_employee;
                     checks[checks.Count - 1].card_number = item.card_number;
@@ -202,7 +200,6 @@ namespace Zlagoda.Business.Repositories
                     }
 
                     checks[checks.Count - 1].check_number = item.check_number;
-                    checks[checks.Count - 1].check_number = item.check_number;
                     checks[checks.Count - 1].id_employee = item.id_employee;
                     checks[checks.Count - 1].card_number = item.card_number;
                     checks[checks.Count - 1].print_date = item.print_date;
@@ -256,7 +253,6 @@ namespace Zlagoda.Business.Repositories
                     }
 
                     checks[checks.Count - 1].check_number = item.check_number;
-                    checks[checks.Count - 1].check_number = item.check_number;
                     checks[checks.Count - 1].id_employee = item.id_employee;
                     checks[checks.Count - 1].card_number = item.card_number;
                     checks[checks.Count - 1].print_date = item.print_date;
@@ -280,7 +276,7 @@ namespace Zlagoda.Business.Repositories
             string query = @"SELECT C.*,
                              S.UPC, S.product_number, S.selling_price as store_product_total_price,
                              SP.UPC_prom, SP.id_product, SP.selling_price as store_product_price,
-                             SP.products_number, SP.promotional_product, P.*, E.*
+                             SP.products_number, SP.promotional_product, P.*, E.*, CC.*, Cat.*
                              FROM [Check] C
                              INNER JOIN Sale S
                              ON C.check_number=S.check_number
@@ -290,6 +286,10 @@ namespace Zlagoda.Business.Repositories
                              ON P.id_product=SP.id_product
                              INNER JOIN Employee E
                              ON C.id_employee=E.id_employee
+                             INNER JOIN Category Cat
+                             ON Cat.category_number=P.category_number
+                             LEFT JOIN Customer_Card CC
+                             ON C.card_number=CC.card_number
                              WHERE C.check_number=@CheckNumber";
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -307,7 +307,6 @@ namespace Zlagoda.Business.Repositories
                 foreach (var item in result)
                 {
                     check.check_number = item.check_number;
-                    check.check_number = item.check_number;
                     check.id_employee = item.id_employee;
                     check.card_number = item.card_number;
                     check.print_date = item.print_date;
@@ -319,6 +318,13 @@ namespace Zlagoda.Business.Repositories
                         empl_surname = item.empl_surname,
                         empl_name = item.empl_name,
                         empl_patronymic = item.empl_patronymic,
+                    };
+                    check.customer_card = new CustomerCard
+                    {
+                        cust_name = item.cust_name,
+                        cust_surname = item.cust_surname,
+                        cust_patronymic = item.cust_patronymic,
+                        percent = item.percent ?? 0
                     };
                 }
 
@@ -348,7 +354,12 @@ namespace Zlagoda.Business.Repositories
                         category_number = item.category_number,
                         product_name = item.product_name,
                         characteristics = item.characteristics,
-                    }
+                        category = new Category
+                        {
+                            category_number = item.category_number,
+                            category_name = item.category_name,
+                        },
+                    },
                 },
             };
         }

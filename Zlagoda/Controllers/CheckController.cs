@@ -40,6 +40,7 @@ namespace Zlagoda.Controllers
             bool endDateExists = DateTime.TryParse(endDate, out dateEnd);
             IEnumerable<Check> checks = new List<Check>();
             var user = ClaimsService.GetUserFromClaims(_httpContextAccessor.HttpContext!.User);
+            int totalQuantityOfSoldProducts = 0;
             if (user.empl_role == nameof(UserRoles.Cashier))
             {
                 if (startDateExists)
@@ -47,10 +48,12 @@ namespace Zlagoda.Controllers
                     if (endDateExists)
                     {
                         checks = await _checkRepository.GetAllChecksCreatedByCertainCashierDuringPeriodAsync(user, dateStart, dateEnd);
+                        totalQuantityOfSoldProducts = await _saleRepository.GetTotalQuantityOfStoreProductsSoldByCertainCashierDuringPeriodAsync(user, dateStart, dateEnd);
                     }
                     else
                     {
                         checks = await _checkRepository.GetAllChecksCreatedByCertainCashierOnDateAsync(user, dateStart);
+                        totalQuantityOfSoldProducts = await _saleRepository.GetTotalQuantityOfStoreProductsSoldByCertainCashierDuringPeriodAsync(user, dateStart, dateStart);
                     }
                 } 
                 else
@@ -68,10 +71,12 @@ namespace Zlagoda.Controllers
                         if (endDateExists)
                         {
                             checks = await _checkRepository.GetAllChecksCreatedByCertainCashierDuringPeriodAsync(cashier, dateStart, dateEnd);
+                            totalQuantityOfSoldProducts = await _saleRepository.GetTotalQuantityOfStoreProductsSoldByCertainCashierDuringPeriodAsync(cashier, dateStart, dateEnd);
                         }
                         else
                         {
                             checks = await _checkRepository.GetAllChecksCreatedByCertainCashierOnDateAsync(cashier, dateStart);
+                            totalQuantityOfSoldProducts = await _saleRepository.GetTotalQuantityOfStoreProductsSoldByCertainCashierDuringPeriodAsync(cashier, dateStart, dateStart);
                         }
                     }
                     else
@@ -82,6 +87,11 @@ namespace Zlagoda.Controllers
                 else
                 {
                     checks = await _checkRepository.GetAllChecksAsync();
+                    if (!startDateExists)
+                        dateStart = new DateTime(1970, 1, 1);
+                    if (!endDateExists)
+                        dateEnd = DateTime.Now;
+                    totalQuantityOfSoldProducts = await _saleRepository.GetTotalQuantityOfStoreProductsSoldByAllCashiersDuringPeriodAsync(dateStart, dateEnd);
                 }
             }
             var model = new CheckListViewModel
@@ -89,6 +99,7 @@ namespace Zlagoda.Controllers
                 Title = "Checks",
                 Checks = checks,
                 Cashiers = await _employeeRepository.GetAllEmployeesCashiersOrderedBySurnameAsync(),
+                TotalQuantityOfSoldProducts = totalQuantityOfSoldProducts,
                 Errors = TempData["Errors"] ?? new List<string>(),
             };
             return View("List", model);
@@ -203,6 +214,32 @@ namespace Zlagoda.Controllers
                     },
                 };
                 return StatusCode(500, model.Errors);
+            }
+        }
+
+        [HttpGet]
+        [Route("checks/details/{id}")]
+        [JwtAuthorize]
+        public async Task<IActionResult> Details(string id)
+        {
+            try
+            {
+                var check = await _checkRepository.GetCheckByNumberAsync(id);
+                var model = new CheckDetailsViewModel
+                {
+                    Title = "Check details",
+                    Check = check,
+                    Errors = TempData["Errors"] ?? new List<string>(),
+                };
+                return View("Details", model);
+            }
+            catch (Exception exception)
+            {
+                TempData["Errors"] = new List<string>()
+                {
+                    exception.Message,
+                };
+                return RedirectToAction("Index");
             }
         }
     }

@@ -115,7 +115,17 @@
 
     </div>
 
-
+    @if (startDate is not null || endDate is not null)
+    {
+        <div class="row mt-4">
+            <div class="col d-flex justify-content-between align-items-center flex-nowrap">
+                <h5 class="text-start w-100">
+                    Загальна сума проданих товарів цим касиром за обраний період:
+                    <span>@Model.TotalQuantityOfSoldProducts</span>
+                </h5>
+            </div>
+        </div>
+    }
     <!-- TABLE -->
     <div class="table-responsive">
         <table class="table table-striped table-sm printable" id="store-products-table">
@@ -127,6 +137,7 @@
                     <th scope="col">Дата</th>
                     <th scope="col">Загальна сума</th>
                     <th scope="col">ПДВ</th>
+                    <th scope="col" style="width: 130px;" class="noprint">Детальніше</th>
                     @if (userRole == nameof(UserRoles.Manager))
                     {
                         <th scope="col" style="width: 120px;" class="noprint">Видалити</th>
@@ -143,6 +154,12 @@
                         <td>@check.print_date.ToString("dd/MM/yyyy")</td>
                         <td>@check.sum_total.ToString("0.00")$</td>
                         <td>@check.vat.ToString("0.00")$</td>
+                        <td class="noprint">
+                            <a class="btn btn-sm btn-outline-dark edit-delete-btn" asp-action="Details" asp-route-id="@check.check_number">
+                                <i class="fa-solid fa-circle-info me-2"></i>
+                                Детальніше
+                            </a>
+                        </td>
                         @if (userRole == nameof(UserRoles.Manager))
                         {
                             <td class="noprint">

@@ -42,7 +42,11 @@ namespace Zlagoda.Business.Repositories
 
         public async Task<int> GetTotalQuantityOfStoreProductSoldDuringPeriodAsync(StoreProduct storeProduct, DateTime startDate, DateTime endDate)
 		{
-			string query = @"SELECT SUM(product_number) FROM Sale WHERE UPC=@UPC AND check_number IN (SELECT check_number FROM [Check] WHERE print_date BETWEEN @StartDate AND @EndDate)";
+			string query = @"SELECT SUM(product_number) 
+							 FROM Sale 
+						     WHERE UPC=@UPC AND check_number IN (SELECT check_number 
+																 FROM [Check] 
+																 WHERE print_date BETWEEN @StartDate AND @EndDate)";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				return await connection.ExecuteScalarAsync<int>(query, new
@@ -56,7 +60,11 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<int> GetTotalQuantityOfStoreProductsSoldByAllCashiersDuringPeriodAsync(DateTime startDate, DateTime endDate)
 		{
-			string query = @"SELECT SUM(product_number) FROM Sale WHERE check_number IN (SELECT check_number FROM [Check] WHERE print_date BETWEEN @StartDate AND @EndDate)";
+			string query = @"SELECT SUM(product_number) 
+							 FROM Sale 
+							 WHERE check_number IN (SELECT check_number 
+													FROM [Check] 
+													WHERE print_date BETWEEN @StartDate AND @EndDate)";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				return await connection.ExecuteScalarAsync<int>(query, new
@@ -69,7 +77,12 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<int> GetTotalQuantityOfStoreProductsSoldByCertainCashierDuringPeriodAsync(Employee employee, DateTime startDate, DateTime endDate)
 		{
-			string query = @"SELECT SUM(product_number) FROM Sale WHERE check_number IN (SELECT check_number FROM [Check] WHERE id_employee=@IdEmployee AND print_date BETWEEN @StartDate AND @EndDate)";
+			string query = @"SELECT SUM(product_number) 
+							 FROM Sale 
+							 WHERE check_number IN (SELECT check_number 
+													FROM [Check] 
+													WHERE id_employee=@IdEmployee 
+													AND print_date BETWEEN @StartDate AND @EndDate)";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				return await connection.ExecuteScalarAsync<int>(query, new
