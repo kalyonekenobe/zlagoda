@@ -6,6 +6,7 @@ using Zlagoda.Business.Entities;
 using Zlagoda.Business.Interfaces;
 using Zlagoda.Enums;
 using Zlagoda.Models;
+using Zlagoda.Services;
 
 namespace Zlagoda.Controllers
 {
@@ -32,12 +33,62 @@ namespace Zlagoda.Controllers
         [Route("checks")]
         [Route("checks/list")]
         [JwtAuthorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([FromQuery(Name = "cashier-id")] string? cashierId = null, [FromQuery(Name = "start-date")] string? startDate = null, [FromQuery(Name = "end-date")] string? endDate = null)
         {
+            DateTime dateStart, dateEnd;
+            bool startDateExists = DateTime.TryParse(startDate, out dateStart);
+            bool endDateExists = DateTime.TryParse(endDate, out dateEnd);
+            IEnumerable<Check> checks = new List<Check>();
+            var user = ClaimsService.GetUserFromClaims(_httpContextAccessor.HttpContext!.User);
+            if (user.empl_role == nameof(UserRoles.Cashier))
+            {
+                if (startDateExists)
+                {
+                    if (endDateExists)
+                    {
+                        checks = await _checkRepository.GetAllChecksCreatedByCertainCashierDuringPeriodAsync(user, dateStart, dateEnd);
+                    }
+                    else
+                    {
+                        checks = await _checkRepository.GetAllChecksCreatedByCertainCashierOnDateAsync(user, dateStart);
+                    }
+                } 
+                else
+                {
+                    checks = await _checkRepository.GetAllChecksCreatedByCertainCashierDuringPeriodAsync(user, new DateTime(1970, 1, 1), DateTime.Now);
+                }
+            }
+            else
+            {
+                if (cashierId is not null)
+                {
+                    var cashier = await _employeeRepository.GetEmployeeByIdAsync(cashierId);
+                    if (startDateExists)
+                    {
+                        if (endDateExists)
+                        {
+                            checks = await _checkRepository.GetAllChecksCreatedByCertainCashierDuringPeriodAsync(cashier, dateStart, dateEnd);
+                        }
+                        else
+                        {
+                            checks = await _checkRepository.GetAllChecksCreatedByCertainCashierOnDateAsync(cashier, dateStart);
+                        }
+                    }
+                    else
+                    {
+                        checks = await _checkRepository.GetAllChecksCreatedByCertainCashierDuringPeriodAsync(cashier, new DateTime(1970, 1, 1), DateTime.Now);
+                    }
+                }
+                else
+                {
+                    checks = await _checkRepository.GetAllChecksAsync();
+                }
+            }
             var model = new CheckListViewModel
             {
                 Title = "Checks",
-                Checks = await _checkRepository.GetAllChecksAsync(),
+                Checks = checks,
+                Cashiers = await _employeeRepository.GetAllEmployeesCashiersOrderedBySurnameAsync(),
                 Errors = TempData["Errors"] ?? new List<string>(),
             };
             return View("List", model);

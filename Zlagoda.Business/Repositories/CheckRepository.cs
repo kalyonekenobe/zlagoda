@@ -83,7 +83,7 @@ namespace Zlagoda.Business.Repositories
             {
                 var result = await connection.QueryAsync(query);
                 List<Check> checks = new List<Check>();
-                string previousCheckId = "-1";
+                string previousCheckId = "";
                 foreach (var item in result)
                 {
                     if (item.check_number != previousCheckId)
@@ -114,12 +114,10 @@ namespace Zlagoda.Business.Repositories
 
         public async Task<IEnumerable<Check>> GetAllChecksCreatedByAllCashiersDuringPeriodAsync(DateTime startDate, DateTime endDate)
         {
-            string query = @"SELECT C.check_number, C.card_number, C.id_employee, 
-                             C.print_date, C.sum_total, C.vat,
+            string query = @"SELECT C.*,
                              S.UPC, S.product_number, S.selling_price as store_product_total_price,
                              SP.UPC_prom, SP.id_product, SP.selling_price as store_product_price,
-                             SP.products_number, SP.promotional_product, P.category_number, 
-                             P.product_name, P.characteristics
+                             SP.products_number, SP.promotional_product, P.*, E.*
                              FROM [Check] C
                              INNER JOIN Sale S
                              ON C.check_number=S.check_number
@@ -127,6 +125,8 @@ namespace Zlagoda.Business.Repositories
                              ON S.UPC=SP.UPC
                              INNER JOIN Product P
                              ON P.id_product=SP.id_product
+                             INNER JOIN Employee E
+                             ON C.id_employee=E.id_employee
                              WHERE C.print_date BETWEEN @StartDate AND @EndDate
                              ORDER BY C.check_number";
             using (var connection = new SqlConnection(_connectionString))
@@ -137,7 +137,7 @@ namespace Zlagoda.Business.Repositories
                     EndDate = endDate,
                 });
                 List<Check> checks = new List<Check>();
-                int previousCheckId = -1;
+                string previousCheckId = "";
                 foreach (var item in result)
                 {
                     if (item.check_number != previousCheckId)
@@ -154,6 +154,12 @@ namespace Zlagoda.Business.Repositories
                     checks[checks.Count - 1].sum_total = item.sum_total;
                     checks[checks.Count - 1].vat = item.vat;
                     checks[checks.Count - 1].sales.Add(convertObjectToSale(item));
+                    checks[checks.Count - 1].employee = new Employee
+                    {
+                        empl_surname = item.empl_surname,
+                        empl_name = item.empl_name,
+                        empl_patronymic = item.empl_patronymic,
+                    };
                 }
 
                 return checks;
@@ -162,12 +168,10 @@ namespace Zlagoda.Business.Repositories
 
         public async Task<IEnumerable<Check>> GetAllChecksCreatedByCertainCashierDuringPeriodAsync(Employee employee, DateTime startDate, DateTime endDate)
         {
-            string query = @"SELECT C.check_number, C.card_number, C.id_employee, 
-                             C.print_date, C.sum_total, C.vat,
+            string query = @"SELECT C.*,
                              S.UPC, S.product_number, S.selling_price as store_product_total_price,
                              SP.UPC_prom, SP.id_product, SP.selling_price as store_product_price,
-                             SP.products_number, SP.promotional_product, P.category_number, 
-                             P.product_name, P.characteristics
+                             SP.products_number, SP.promotional_product, P.*, E.*
                              FROM [Check] C
                              INNER JOIN Sale S
                              ON C.check_number=S.check_number
@@ -175,6 +179,8 @@ namespace Zlagoda.Business.Repositories
                              ON S.UPC=SP.UPC
                              INNER JOIN Product P
                              ON P.id_product=SP.id_product
+                             INNER JOIN Employee E
+                             ON C.id_employee=E.id_employee
                              WHERE C.id_employee=@IdEmployee AND C.print_date BETWEEN @StartDate AND @EndDate
                              ORDER BY C.check_number";
             using (var connection = new SqlConnection(_connectionString))
@@ -186,7 +192,7 @@ namespace Zlagoda.Business.Repositories
                     EndDate = endDate,
                 });
                 List<Check> checks = new List<Check>();
-                int previousCheckId = -1;
+                string previousCheckId = "";
                 foreach (var item in result)
                 {
                     if (item.check_number != previousCheckId)
@@ -203,6 +209,12 @@ namespace Zlagoda.Business.Repositories
                     checks[checks.Count - 1].sum_total = item.sum_total;
                     checks[checks.Count - 1].vat = item.vat;
                     checks[checks.Count - 1].sales.Add(convertObjectToSale(item));
+                    checks[checks.Count - 1].employee = new Employee
+                    {
+                        empl_surname = item.empl_surname,
+                        empl_name = item.empl_name,
+                        empl_patronymic = item.empl_patronymic,
+                    };
                 }
 
                 return checks;
@@ -211,12 +223,10 @@ namespace Zlagoda.Business.Repositories
 
         public async Task<IEnumerable<Check>> GetAllChecksCreatedByCertainCashierOnDateAsync(Employee employee, DateTime date)
         {
-            string query = @"SELECT C.check_number, C.card_number, C.id_employee, 
-                             C.print_date, C.sum_total, C.vat,
+            string query = @"SELECT C.*,
                              S.UPC, S.product_number, S.selling_price as store_product_total_price,
                              SP.UPC_prom, SP.id_product, SP.selling_price as store_product_price,
-                             SP.products_number, SP.promotional_product, P.category_number, 
-                             P.product_name, P.characteristics
+                             SP.products_number, SP.promotional_product, P.*, E.*
                              FROM [Check] C
                              INNER JOIN Sale S
                              ON C.check_number=S.check_number
@@ -224,6 +234,8 @@ namespace Zlagoda.Business.Repositories
                              ON S.UPC=SP.UPC
                              INNER JOIN Product P
                              ON P.id_product=SP.id_product
+                             INNER JOIN Employee E
+                             ON C.id_employee=E.id_employee
                              WHERE C.id_employee=@IdEmployee AND C.print_date=@Date
                              ORDER BY C.check_number";
             using (var connection = new SqlConnection(_connectionString))
@@ -234,7 +246,7 @@ namespace Zlagoda.Business.Repositories
                     Date = date,
                 });
                 List<Check> checks = new List<Check>();
-                int previousCheckId = -1;
+                string previousCheckId = "";
                 foreach (var item in result)
                 {
                     if (item.check_number != previousCheckId)
@@ -251,6 +263,12 @@ namespace Zlagoda.Business.Repositories
                     checks[checks.Count - 1].sum_total = item.sum_total;
                     checks[checks.Count - 1].vat = item.vat;
                     checks[checks.Count - 1].sales.Add(convertObjectToSale(item));
+                    checks[checks.Count - 1].employee = new Employee
+                    {
+                        empl_surname = item.empl_surname,
+                        empl_name = item.empl_name,
+                        empl_patronymic = item.empl_patronymic,
+                    };
                 }
 
                 return checks;
@@ -259,12 +277,10 @@ namespace Zlagoda.Business.Repositories
 
         public async Task<Check> GetCheckByNumberAsync(string number)
         {
-            string query = @"SELECT C.check_number, C.card_number, C.id_employee, 
-                             C.print_date, C.sum_total, C.vat,
+            string query = @"SELECT C.*,
                              S.UPC, S.product_number, S.selling_price as store_product_total_price,
                              SP.UPC_prom, SP.id_product, SP.selling_price as store_product_price,
-                             SP.products_number, SP.promotional_product, P.category_number, 
-                             P.product_name, P.characteristics
+                             SP.products_number, SP.promotional_product, P.*, E.*
                              FROM [Check] C
                              INNER JOIN Sale S
                              ON C.check_number=S.check_number
@@ -272,6 +288,8 @@ namespace Zlagoda.Business.Repositories
                              ON S.UPC=SP.UPC
                              INNER JOIN Product P
                              ON P.id_product=SP.id_product
+                             INNER JOIN Employee E
+                             ON C.id_employee=E.id_employee
                              WHERE C.check_number=@CheckNumber";
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -296,6 +314,12 @@ namespace Zlagoda.Business.Repositories
                     check.sum_total = item.sum_total;
                     check.vat = item.vat;
                     check.sales.Add(convertObjectToSale(item));
+                    check.employee = new Employee
+                    {
+                        empl_surname = item.empl_surname,
+                        empl_name = item.empl_name,
+                        empl_patronymic = item.empl_patronymic,
+                    };
                 }
 
                 return check;

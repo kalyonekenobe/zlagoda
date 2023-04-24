@@ -92,6 +92,7 @@ body {
     font-size: 14px;
     margin-bottom: 5px;
     color: gray;
+    user-select: none;
 }
 
 .dropdown {
@@ -107,6 +108,7 @@ body {
     display: inline-flex;
     justify-content: space-between;
     align-items: center;
+    overflow: hidden;
 }
 
 .dropdown .dropdown-menu {
@@ -205,4 +207,22 @@ input[readonly] {
     background: rgba(0, 0, 0, 0.05) !important;
     box-shadow: none !important;
     outline: none !important;
+}
+
+#check-creation-date-range {
+    position: relative;
+    vertical-align: middle;
+}
+
+#label-date-range {
+    cursor: pointer;
+}
+
+.input-rounded {
+    border-radius: 5px !important;
+}
+
+.btn-bordered {
+    font-size: 0.9rem;
+    padding: 6px 20px;
 }

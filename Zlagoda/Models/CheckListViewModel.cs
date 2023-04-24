@@ -6,6 +6,7 @@ namespace Zlagoda.Models
     {
         public string Title { get; set; } = string.Empty;
         public IEnumerable<Check> Checks { get; set; } = new List<Check>();
+        public IEnumerable<Employee> Cashiers { get; set; } = new List<Employee>();
         public dynamic Errors { get; set; } = new List<string>();
     }
 }

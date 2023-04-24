@@ -35,77 +35,73 @@
     <div class="row justify-content-between align-items-end noprint">
         <div class="col-12 col-xl-8 search-container flex-wrap flex-md-nowrap">
             <!-- dropdown -->
-            <div class="dropdown col-12 col-md-3 col-xl-2 me-2">
-                <label>Показати товари</label>
-                <br>
-                <div class="btn-group w-100">
-                    <button class="btn btn-sm dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        @{
-                            var urlPromo = Context.Request.Query["promo"].FirstOrDefault();
-                            string selectedPromoFilter = "Усі товари";
-                            if (urlPromo == "true")
-                                selectedPromoFilter = "Товари зі знижкою";
-                            if (urlPromo == "false")
-                                selectedPromoFilter = "Товари без знижки";
-
-                        }
-                        @selectedPromoFilter
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" asp-route-promo="">
-                                Усі товари
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" asp-route-promo="true">
-                                Товари зі знижкою
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" asp-route-promo="false">
-                                Товари без знижки
-                            </a>
-                        </li>
-                    </ul>
+            @{
+                var urlCashierId = Context.Request.Query["cashier-id"].FirstOrDefault();
+                string selectedCashier = "Усі касири";
+                var employee = Model.Cashiers.FirstOrDefault(cashier => cashier.id_employee == urlCashierId);
+                if (employee is not null)
+                {
+                    selectedCashier = $"{employee.empl_surname} {employee.empl_name} {employee.empl_patronymic}";
+                }
+                var urlStartDate = Context.Request.Query["start-date"].FirstOrDefault();
+                var urlEndDate = Context.Request.Query["end-date"].FirstOrDefault();
+                DateTime? startDate, endDate;
+                startDate = urlStartDate is not null && urlStartDate != "" ? DateTime.Parse(urlStartDate) : null;
+                endDate = urlEndDate is not null && urlEndDate != "" ? DateTime.Parse(urlEndDate) : null;
+            }
+            @if (userRole == nameof(UserRoles.Manager))
+            {
+                <div class="dropdown col-12 col-md-4 col-lg-3 me-2">
+                    <label>Касир</label>
+                    <br>
+                    <div class="btn-group w-100">
+                        <button class="btn btn-sm dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            @selectedCashier
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" asp-route-cashier-id="">
+                                    Усі касири
+                                </a>
+                            </li>
+                            @foreach (var cashier in Model.Cashiers)
+                            {
+                                <li>
+                                    <a class="dropdown-item" asp-route-cashier-id="@cashier.id_employee" asp-route-start-date="@startDate?.ToString("yyyy-MM-dd")" asp-route-end-date="@endDate?.ToString("yyyy-MM-dd")">
+                                        @cashier.empl_surname @cashier.empl_name @cashier.empl_patronymic
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
                 </div>
-            </div>
-            <div class="dropdown col-12 col-md-3 col-xl-2 me-2">
-                <label>Сортувати за</label>
-                <br>
-                <div class="btn-group w-100">
-                    <button class="btn btn-sm dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        @{
-                            var urlSorting = Context.Request.Query["sorting"].FirstOrDefault();
-                            string selectedSortingFilter = "За назвою";
-                            if (urlSorting == "quantity")
-                                selectedSortingFilter = "За кількістю";
-                            else
-                                selectedSortingFilter = "За назвою";
-                        }
-                        @selectedSortingFilter
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" asp-route-sorting="" >
-                                За назвою
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" asp-route-sorting="quantity" >
-                                За кількістю
-                            </a>
-                        </li>
-                    </ul>
+            }
+            @if (urlCashierId is not null || userRole == nameof(UserRoles.Cashier))
+            {
+                <div class="dropdown col-12 col-md-8 col-lg-9 me-2">
+                    <label for="check-creation-date-range" id="label-date-range">Дата створення чеків (конкретна дата)</label>
+                    @if (endDate is null)
+                    {
+                        <input type="checkbox" id="check-creation-date-range" checked>
+                    }
+                    else
+                    {
+                        <input type="checkbox" id="check-creation-date-range">
+                    }
+                    <br>
+                    <div class="d-flex g-2">
+                        <div class="form-group d-inline-flex col-5 me-2">
+                            <input type="date" value="@startDate?.ToString("yyyy-MM-dd")" id="search-check-start-date" class="form-control search w-100 input-rounded" required>
+                        </div>
+                        <div class="form-group d-inline-flex col-5 me-2 d-none date-to-container">
+                            <input type="date" value="@endDate?.ToString("yyyy-MM-dd")" id="search-check-end-date" class="form-control search w-100 input-rounded" required>
+                        </div>
+                        <div>
+                            <a class="btn btn-sm btn-dark btn-bordered" id="search-check-button">Знайти</a>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="d-inline-flex col-12 col-md-6 col-xl-8 flex-column" style="margin-top: 1px;">
-                <label>Отримати інформацію про товар за UPC</label>
-                <div class="form-group d-inline-flex w-100">
-                    <input type="text" class="form-control search w-100" id="get-store-products-info-input" placeholder="UPC товару" required>
-                    <a class="btn btn-dark search-btn" id="get-store-products-info-btn" style="min-width: 180px;" href="">Отримати інформацію</a>
-                </div>
-            </div>
+            }
         </div>
 
         <div class="col-12 col-xl-4" style="text-align: end">

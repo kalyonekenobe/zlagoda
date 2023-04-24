@@ -191,3 +191,52 @@ if (createCheckForm) {
         }
     }
 }
+
+let showCheckDateRangeCheckbox = document.getElementById('check-creation-date-range');
+if (showCheckDateRangeCheckbox) {
+    let endDate = document.getElementById('search-check-end-date');
+    let labelDateRange = document.getElementById('label-date-range');
+    let updateCheckboxState = () => {
+        let dateToContainer = document.querySelector('.dropdown .date-to-container');
+        if (showCheckDateRangeCheckbox.checked) {
+            dateToContainer.classList.add('d-none');
+            labelDateRange.innerHTML = "Дата створення чеків (конкретна дата)";
+            endDate.value = "";
+        } else {
+            dateToContainer.classList.remove('d-none');
+            labelDateRange.innerHTML = "Дата створення чеків (проміжок часу)";
+        }
+    }
+    updateCheckboxState();
+    showCheckDateRangeCheckbox.onchange = event => {
+        updateCheckboxState();
+    }   
+}
+
+let searchCheckButton = document.getElementById('search-check-button');
+if (searchCheckButton) {
+    searchCheckButton.onclick = event => {
+        let startDate = document.getElementById('search-check-start-date');
+        let endDate = document.getElementById('search-check-end-date');
+        if (startDate.value && endDate.value != "" && startDate.value > endDate.value) {
+            let temp = startDate.value;
+            startDate.value = endDate.value;
+            endDate.value = temp;
+        }
+        let url = new URL(location.href);
+        if (startDate) {
+            if (startDate.value && startDate.value != "") {
+                url.searchParams.set('start-date', startDate.value);
+            } else {
+                url.searchParams.delete('start-date');
+            }
+            if (!endDate.classList.contains('d-none')) {
+                url.searchParams.set('end-date', endDate.value);
+            }
+            if (endDate.value == "") {
+                url.searchParams.delete('end-date');
+            }
+            location.replace(url);
+        }
+    }
+}
