@@ -23,15 +23,15 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-xl bg-dark" data-bs-theme="dark">
+        <nav class="navbar navbar-expand-xxl bg-dark" data-bs-theme="dark">
             <div class="container-fluid justify-content-between flex-nowrap">
-                <div class="navigation d-flex flex-nowrap w-100"> 
+                <div class="navigation d-xxl-flex flex-nowrap w-100"> 
                     <a class="navbar-brand text-white" asp-controller="Home" asp-action="Index">ZLAGODA</a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav">
+                        <ul class="navbar-nav me-5">
                             <li class="nav-item">
                                 <a class="nav-link active" aria-current="page" asp-controller="Home" asp-action="Index">Головна</a>
                             </li>
@@ -77,6 +77,11 @@
                                 </li>
                             }
                         </ul>
+                        <div class="d-inline-flex align-items-center">
+                            <a class="btn btn-sm btn-primary me-2" href="report.doc" download>Звіт Ігумнов</a>
+                            <a class="btn btn-sm btn-primary me-2" href="report2.docx" download>Звіт Гаврилюк</a>
+                            <a class="btn btn-sm btn-primary" href="report.doc" download>Звіт Крячко</a>
+                        </div>
                     </div>
                 </div>
                 <div class="additional-buttons d-flex justify-content-end align-items-center" style="min-width: 320px;">
