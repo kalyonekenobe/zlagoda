@@ -369,7 +369,7 @@ namespace Zlagoda.Business.Repositories
             }
         }
 
-        public async Task<StoreProduct?> GetStoreProductParentByUPCAsync(string upc)
+        public async Task<StoreProduct?> GetStoreProductNonPromotionalByUPCAsync(string upc)
         {
             string query = @"SELECT *
                              FROM Store_Product SP
@@ -377,7 +377,7 @@ namespace Zlagoda.Business.Repositories
                              ON SP.id_product=P.id_product 
                              INNER JOIN Category C
                              ON P.category_number=C.category_number
-                             WHERE SP.UPC=@UPC";
+                             WHERE SP.UPC_prom=@UPC";
             using (var connection = new SqlConnection(_connectionString))
             {
                 var result = await connection.QueryFirstOrDefaultAsync(query, new

@@ -10,5 +10,6 @@
 		public bool promotional_product { get; set; }
 
 		public Product? product { get; set; } = null;
+		public StoreProduct? non_promotional_product { get; set; } = null;
 	}
 }

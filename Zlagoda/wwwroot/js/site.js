@@ -31,6 +31,35 @@ let addCloseButtonsClickEvents = () => {
 
 addCloseButtonsClickEvents();
 
+let storeProductParentSelect = document.getElementById('ParentUPC');
+let storeProductQuantityInput = document.querySelectorAll('#StoreProduct_products_number')[1];
+let updateStoreParentSelect = async () => {
+    if (storeProductParentSelect) {
+        if (storeProductParentSelect.offsetParent === null) {
+            if (storeProductQuantityInput) {
+                storeProductQuantityInput.removeAttribute('max');
+            }
+            return;
+        } 
+        let value = storeProductParentSelect.value;
+        let url = `${location.origin}/api/store-products/${value}`;
+        await fetch(url).then(async response => await response.json()).then(response => {
+            if (storeProductQuantityInput) {
+                let max = response.products_number;
+                storeProductQuantityInput.setAttribute('max', max);
+            }
+        });
+    }
+}
+if (storeProductParentSelect) {
+    if (storeProductParentSelect.offsetParent !== null) {
+        updateStoreParentSelect();
+    } 
+    storeProductParentSelect.onchange = async event => {
+        await updateStoreParentSelect();
+    }
+}
+
 let storeProductTypeSelector = document.querySelector('.store-product-type-selector');
 if (storeProductTypeSelector) {
     let buttons = storeProductTypeSelector.querySelectorAll('span');
@@ -45,10 +74,13 @@ if (storeProductTypeSelector) {
                 container.classList.remove('visible');
             }
         })
+        updateStoreParentSelect();
     });
 }
 
 let storeProductSelect = document.getElementById('store-product-select');
+let checkStoreProductQuantityInput = document.getElementById('store-product-quantity');
+
 if (storeProductSelect) {
     let updateQuantityInputAttributes = async () => {
         let quantityInput = document.getElementById('store-product-quantity');
@@ -62,16 +94,19 @@ if (storeProductSelect) {
     updateQuantityInputAttributes().then(async () => {
         storeProductSelect.onchange = async event => {
             await updateQuantityInputAttributes();
+            if (checkStoreProductQuantityInput) {
+                checkStoreProductQuantityInput.value = 0;
+            }
         }
     });
 }
 
-let checkStoreProductQuantityInput = document.getElementById('store-product-quantity');
 if (checkStoreProductQuantityInput) {
-    checkStoreProductQuantityInput.oninput = event => {
+    let quantityChangeEvent = event => {
         let max = checkStoreProductQuantityInput.getAttribute('max');
         checkStoreProductQuantityInput.value = Math.min(event.target.value, max);
     }
+    checkStoreProductQuantityInput.oninput = event => quantityChangeEvent(event);
 }
 
 let createCheckButton = document.getElementById('create-check-button');
@@ -91,45 +126,57 @@ if (addStoreProductToCheckButton) {
                 if (checkProduct) {
                     let row = checkProductsTable.querySelector(`tr[data-product-upc='${checkProduct.UPC}']`);
                     if (!row) {
-                        checkProduct.product_number = Number.parseInt(quantityInput.value);
-                        checkProducts.push(checkProduct);
-                        row = checkProductsTable.insertRow();
-                        row.setAttribute('data-row-id', checkProductsTable.rows.length - 1);
-                        row.setAttribute('data-product-upc', checkProduct.UPC);
+                        if (Number.parseInt(quantityInput.value) <= checkProduct.products_number || checkProduct.products_number !== 0) {
+                            if (Number.parseInt(quantityInput.value) > checkProduct.products_number) {
+                                alert("Перевищення максимально доступної кількості товару! Кількість була округлена до максимального значення.");
+                            }
+                            checkProduct.product_number = Math.max(1, Math.min(Number.parseInt(quantityInput.value), Number.parseInt(quantityInput.getAttribute('max'))));
+                            checkProducts.push(checkProduct);
+                            row = checkProductsTable.insertRow();
+                            row.setAttribute('data-row-id', checkProductsTable.rows.length - 1);
+                            row.setAttribute('data-product-upc', checkProduct.UPC);
+                        } else {
+                            alert("Наразі даний товар було розпродано!");
+                        }
                     } else {
                         checkProduct = checkProducts.find(product => product.UPC === checkProduct.UPC);
-                        checkProduct.product_number += Number.parseInt(quantityInput.value);
+                        if (checkProduct.product_number + Number.parseInt(quantityInput.value) > checkProduct.products_number) {
+                            alert("Перевищення максимально доступної кількості товару! Кількість була округлена до максимального значення.");
+                        }
+                        checkProduct.product_number = Math.min(checkProduct.product_number + Number.parseInt(quantityInput.value), checkProduct.products_number);
                     }
-                    row.innerHTML = `
-                        <td>${checkProduct.product.product_name}</td>
-                        <td>${checkProduct.product.category.category_name}</td>
-                        <td>
-                            ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(checkProduct.selling_price).replace(',', ' ')}$
-                        </td>
-                        <td>${checkProduct.product_number} шт.</td>
-                        <td>
-                            ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(checkProduct.product_number * checkProduct.selling_price).replace(',', ' ') }$
-                        </td>
-                        <td width="112">
-                            <a class="btn btn-sm btn-outline-danger delete-btn">
-                                <i class="fa-solid fa-trash me-2"></i>
-                                Видалити
-                            </a>
-                        </td>
-                    `;
-                    let totalSum = checkProducts.reduce((partialSum, item) => partialSum + (item.product_number * item.selling_price), 0);
-                    let deleteButton = row.querySelector('.delete-btn');
-                    if (deleteButton) {
-                        deleteButton.onclick = event => {
-                            checkProducts = checkProducts.filter(product => product.UPC !== row.dataset.productUpc);
-                            totalSum = checkProducts.reduce((partialSum, item) => partialSum + (item.product_number * item.selling_price), 0);
-                            checkProductsTable.deleteRow(row.dataset.rowId);
-                            totalCheckSum.innerHTML = `${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalSum).replace(',', ' ')}$`;
-                            if (checkProducts.length === 0) {
-                                createCheckButton.setAttribute('disabled', true);
+                    if (checkProduct && row) {
+                        row.innerHTML = `
+                            <td>${checkProduct.product.product_name} ${checkProduct.promotional_product ? "(акційний)" : ""}</td>
+                            <td>${checkProduct.product.category.category_name}</td>
+                            <td>
+                                ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(checkProduct.selling_price).replace(',', ' ')}$
+                            </td>
+                            <td>${checkProduct.product_number} шт.</td>
+                            <td>
+                                ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(checkProduct.product_number * checkProduct.selling_price).replace(',', ' ')}$
+                            </td>
+                            <td width="112">
+                                <a class="btn btn-sm btn-outline-danger delete-btn">
+                                    <i class="fa-solid fa-trash me-2"></i>
+                                    Видалити
+                                </a>
+                            </td>
+                        `;
+                        let deleteButton = row.querySelector('.delete-btn');
+                        if (deleteButton) {
+                            deleteButton.onclick = event => {
+                                checkProducts = checkProducts.filter(product => product.UPC !== row.dataset.productUpc);
+                                totalSum = checkProducts.reduce((partialSum, item) => partialSum + (item.product_number * item.selling_price), 0);
+                                checkProductsTable.deleteRow(row.dataset.rowId);
+                                totalCheckSum.innerHTML = `${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(totalSum).replace(',', ' ')}$`;
+                                if (checkProducts.length === 0) {
+                                    createCheckButton.setAttribute('disabled', true);
+                                }
                             }
                         }
                     }
+                    let totalSum = checkProducts.reduce((partialSum, item) => partialSum + (item.product_number * item.selling_price), 0);
                     if (checkProducts.length > 0) {
                         createCheckButton.removeAttribute('disabled');
                     }

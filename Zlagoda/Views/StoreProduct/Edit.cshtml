@@ -15,6 +15,7 @@
         <div asp-validation-summary="All"></div>
         <div class="row g-3">
             <input asp-for="StoreProduct.UPC" type="hidden" class="form-control" required>
+            <input asp-for="StoreProduct.UPC_prom" type="hidden" class="form-control">
             @if (Model.StoreProduct.promotional_product)
             {
                 <input asp-for="StoreProduct.id_product" type="hidden" class="form-control" required>
@@ -26,6 +27,11 @@
                 </div>
 
                 <input asp-for="StoreProduct.selling_price" type="hidden" class="form-control" required>
+
+                <div class="col-12">
+                    <label asp-for="StoreProduct.products_number" class="form-label">Кількість одиниць</label>
+                    <input asp-for="StoreProduct.products_number" type="number" min="0" max="@((Model.StoreProduct.non_promotional_product?.products_number ?? 0) + Model.StoreProduct.products_number)" class="form-control" required>
+                </div>
             }
             else
             {
@@ -40,16 +46,15 @@
                     </select>
                 </div>
 
-                    <div class="col-12">
-                        <label asp-for="StoreProduct.selling_price" class="form-label">Ціна продажу</label>
-                        <input asp-for="StoreProduct.selling_price" type="number" min="1" step="0.01" class="form-control" required>
-                    </div>
+                <div class="col-12">
+                    <label asp-for="StoreProduct.selling_price" class="form-label">Ціна продажу</label>
+                    <input asp-for="StoreProduct.selling_price" type="number" min="1" step="0.01" class="form-control" required>
+                </div>
+                <div class="col-12">
+                    <label asp-for="StoreProduct.products_number" class="form-label">Кількість одиниць</label>
+                    <input asp-for="StoreProduct.products_number" type="number" min="0" class="form-control" required>
+                </div>
             }
-
-            <div class="col-12">
-                <label asp-for="StoreProduct.products_number" class="form-label">Кількість одиниць</label>
-                <input asp-for="StoreProduct.products_number" type="number" min="1" class="form-control" required>
-            </div>
 
             <input asp-for="StoreProduct.promotional_product" type="hidden">
         </div>

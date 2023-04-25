@@ -45,9 +45,13 @@
                 }
                 var urlStartDate = Context.Request.Query["start-date"].FirstOrDefault();
                 var urlEndDate = Context.Request.Query["end-date"].FirstOrDefault();
-                DateTime? startDate, endDate;
-                startDate = urlStartDate is not null && urlStartDate != "" ? DateTime.Parse(urlStartDate) : null;
-                endDate = urlEndDate is not null && urlEndDate != "" ? DateTime.Parse(urlEndDate) : null;
+                DateTime? startDate = null, endDate = null;
+                try
+                {
+                    startDate = urlStartDate is not null && urlStartDate != "" ? DateTime.Parse(urlStartDate) : null;
+                    endDate = urlEndDate is not null && urlEndDate != "" ? DateTime.Parse(urlEndDate) : null;
+                } 
+                catch (Exception) { }
             }
             @if (userRole == nameof(UserRoles.Manager))
             {

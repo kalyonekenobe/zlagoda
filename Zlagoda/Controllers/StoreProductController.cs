@@ -145,6 +145,7 @@ namespace Zlagoda.Controllers
                         throw new Exception("Non promotional store product with such UPC doesn't exist!");
                     }
                     var parentProduct = await _storeProductRepository.GetStoreProductByUPCAsync(model.ParentUPC);
+                    parentProduct.products_number -= model.StoreProduct.products_number;
                     model.StoreProduct.selling_price = parentProduct.selling_price * 0.8m;
                     model.StoreProduct.id_product = parentProduct.id_product;
                     parentProduct.UPC_prom = model.StoreProduct.UPC;
@@ -175,6 +176,7 @@ namespace Zlagoda.Controllers
             {
                 var products = await _productRepository.GetAllProductsOrderedByNameAsync();
                 var storeProduct = await _storeProductRepository.GetStoreProductByUPCAsync(id);
+                storeProduct.non_promotional_product = await _storeProductRepository.GetStoreProductNonPromotionalByUPCAsync(storeProduct.UPC);
                 var model = new EditStoreProductViewModel
                 {
                     Title = "Edit store product",
@@ -205,7 +207,21 @@ namespace Zlagoda.Controllers
                     model.Products = await _productRepository.GetAllProductsOrderedByNameAsync();
                     return View("Edit", model);
                 }
+                var oldStoreProduct = await _storeProductRepository.GetStoreProductByUPCAsync(model.StoreProduct.UPC);
+                var itemsAdded = model.StoreProduct.products_number - oldStoreProduct.products_number;
+                var nonPromotional = await _storeProductRepository.GetStoreProductNonPromotionalByUPCAsync(model.StoreProduct.UPC);
                 await _storeProductRepository.UpdateStoreProductAsync(model.StoreProduct);
+                if (nonPromotional is not null)
+                {
+                    nonPromotional.products_number -= itemsAdded;
+                    await _storeProductRepository.UpdateStoreProductAsync(nonPromotional);
+                }
+                if (model.StoreProduct.UPC_prom is not null)
+                {
+                    var promotional = await _storeProductRepository.GetStoreProductByUPCAsync(model.StoreProduct.UPC_prom);
+                    promotional.selling_price = model.StoreProduct.selling_price * 0.8m;
+                    await _storeProductRepository.UpdateStoreProductAsync(promotional);
+                }
                 return RedirectToAction("Index");
             }
             catch (Exception exception)
@@ -278,6 +294,15 @@ namespace Zlagoda.Controllers
         {
             var storeProducts = await _storeProductRepository.GetAllStoreProductsOrderedByNameAsync();
             return JsonConvert.SerializeObject(storeProducts, Formatting.Indented);
+        }
+
+        [HttpGet]
+        [Route("api/store-products/{id}")]
+        [JwtAuthorize]
+        public async Task<string> ApiFetchStoreProductById(string id)
+        {
+            var storeProduct = await _storeProductRepository.GetStoreProductByUPCAsync(id);
+            return JsonConvert.SerializeObject(storeProduct, Formatting.Indented);
         }
     }
 }

@@ -196,6 +196,12 @@ namespace Zlagoda.Controllers
                 {
                     await _saleRepository.CreateSaleAsync(sale);
                 }
+                foreach (var product in result.products)
+                {
+                    StoreProduct storeProduct = await _storeProductRepository.GetStoreProductByUPCAsync(product.UPC.ToString());
+                    storeProduct.products_number -= int.Parse(product.product_number.ToString());
+                    await _storeProductRepository.UpdateStoreProductAsync(storeProduct);
+                }
                 return StatusCode(200);
             }
             catch (Exception exception)
