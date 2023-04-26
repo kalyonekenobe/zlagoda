@@ -10,6 +10,7 @@ namespace Zlagoda.Business.Interfaces
 		Task<IEnumerable<CustomerCard>> GetAllCustomerCardsOrderedBySurnameAsync();
 		Task<IEnumerable<CustomerCard>> GetAllCustomerCardsWithCertainDiscountPercentOrderedBySurnameAsync(int percent);
 		Task<IEnumerable<CustomerCard>> GetCustomerCardsBySurnameAsync(string surname);
+		Task<IEnumerable<CustomerCard>> GetAllCustomerCardsWhoBoughtAllProductsBoughtByClientsWithSurnameAsync(string surname);
 		Task<CustomerCard> GetCustomerCardByNumberAsync(string number);
 	}
 }

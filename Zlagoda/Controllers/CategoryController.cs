@@ -137,5 +137,23 @@ namespace Zlagoda.Controllers
                 return View("Edit", model);
             }
         }
+
+        [HttpGet]
+        [Route("categories/details/{id}")]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
+        public async Task<IActionResult> Details(int id)
+        {
+            
+                var category = await _categoryRepository.GetCategoryByNumberAsync(id);
+                var model = new
+                {
+                    Title = "Category details",
+                    Category = category,
+                    Products = await _categoryRepository.GetAllCategorySoldProductsOrderedByDesc(category),
+                    Errors = TempData["Errors"] ?? new List<string>(),
+                };
+                return View("Details", model);
+            
+        }
     }
 }

@@ -145,5 +145,19 @@ namespace Zlagoda.Controllers
                 return View("Edit", model);
             }
         }
+
+        [HttpGet]
+        [Route("clients/special-list")]
+        [JwtAuthorize]
+        public async Task<IActionResult> DetailedList([FromQuery(Name = "surname")] string? surname = null)
+        {
+            var model = new
+            {
+                Title = "Additional informational list",
+                Clients = await _customerCardRepository.GetAllCustomerCardsWhoBoughtAllProductsBoughtByClientsWithSurnameAsync(surname ?? string.Empty),
+                Errors = TempData["Errors"] ?? new List<string>(),
+            };
+            return View("SpecialList", model);
+        }
     }
 }

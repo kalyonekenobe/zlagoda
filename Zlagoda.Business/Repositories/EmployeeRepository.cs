@@ -74,6 +74,64 @@ namespace Zlagoda.Business.Repositories
             }
         }
 
+        public async Task<IEnumerable<dynamic>> GetAllCashiersWhoCreatedMoreThanQuantityChecksWithoutPromoStoreProductsAsync(int quantity)
+        {
+            string query = @"SELECT E.empl_surname, E.empl_name, E.empl_patronymic
+                             FROM Employee E
+                             WHERE EXISTS (SELECT check_number, COUNT(check_number) AS check_amount
+	                                       FROM [Check] H
+	                                       GROUP BY check_number
+	                                       HAVING (SELECT COUNT(check_number) as check_amount 
+                                                   FROM [Check] ССС
+                                                   WHERE id_employee=E.id_employee
+                                                   AND NOT EXISTS(SELECT UPC
+			                                                      FROM Sale
+				                                                  WHERE check_number=ССС.check_number 
+                                                                  AND UPC IN(SELECT UPC
+	                                                                         FROM Store_Product
+	                                                                         WHERE promotional_product=1
+                                                                            )  
+                                                                 )
+                                                  )>@Amount
+                                          )";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                return await connection.QueryAsync(query, new
+                {
+                    Amount = quantity
+                });
+            }
+        }
+
+        public async Task<IEnumerable<dynamic>> GetAllCashiersWhoServedAllClientsServedByCashiersWithSurnameAsync(string surname)
+        {
+            string query = @"SELECT empl_surname, empl_name, empl_patronymic 
+                             FROM Employee Emp 
+                             WHERE NOT EXISTS(SELECT card_number,E.id_employee 
+                                              FROM [Check]
+                                              INNER JOIN Employee E 
+                                              ON E.id_employee=[Check].id_employee 
+                                              WHERE E.empl_surname=@EmplSurname            
+                                              AND card_number NOT IN(SELECT card_number 
+                                                                     FROM [Check]  
+                                                                     WHERE Emp.id_employee=id_employee 
+                                                                    ) 
+                                             ) 
+                             AND EXISTS(SELECT * 
+                                        FROM [Check]  
+                                        INNER JOIN Employee 
+                                        ON [Check].id_employee=Employee.id_employee 
+                                        WHERE Employee.empl_surname=@EmplSurname 
+                                       )";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                return await connection.QueryAsync(query, new
+                {
+                    EmplSurname = surname,
+                });
+            }
+        }
+
         public async Task<IEnumerable<Employee>> GetAllEmployeesCashiersOrderedBySurnameAsync()
         {
             string query = @"SELECT *

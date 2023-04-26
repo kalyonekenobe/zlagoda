@@ -209,5 +209,28 @@ namespace Zlagoda.Controllers
                 return RedirectToAction("Index");
             }
         }
+
+        [HttpGet]
+        [Route("employees/special-list")]
+        [JwtAuthorize(Role = nameof(UserRoles.Manager))]
+        public async Task<IActionResult> DetailedList([FromQuery(Name = "amount")] int? amount = null, [FromQuery(Name = "surname")] string? surname = null)
+        {
+            IEnumerable<dynamic> data = new List<dynamic>();
+            if (amount is not null)
+            {
+                data = await _employeeRepository.GetAllCashiersWhoCreatedMoreThanQuantityChecksWithoutPromoStoreProductsAsync((int)amount);
+            }
+            if (surname is not null)
+            {
+                data = await _employeeRepository.GetAllCashiersWhoServedAllClientsServedByCashiersWithSurnameAsync(surname);
+            }
+            var model = new
+            {
+                Title = "Additional information list",
+                Employees = data,
+                Errors = TempData["Errors"] ?? new List<string>(),
+            };
+            return View("SpecialList", model);
+        }
     }
 }

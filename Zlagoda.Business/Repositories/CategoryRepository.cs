@@ -88,6 +88,33 @@ namespace Zlagoda.Business.Repositories
 			}
         }
 
+        public async Task<IEnumerable<dynamic>> GetAllCategorySoldProductsOrderedByDesc(Category category)
+        {
+			string query = @"SELECT S.product_name, S.promotional_product, SUM(product_number) AS sold_amount
+							 FROM Sale 
+							 INNER JOIN(SELECT P.product_name, P.characteristics, UPC, SP.promotional_product
+										FROM Store_Product SP
+										INNER JOIN(SELECT *
+												   FROM Product
+												   WHERE category_number IN (SELECT category_number
+				          													 FROM Category
+				           													 WHERE category_name=@CategoryName
+        																	)
+	       										  ) AS P 
+										ON SP.id_product=P.id_product
+									   ) AS S 
+							 ON Sale.UPC=S.UPC
+							 GROUP BY S.product_name, S.promotional_product 
+							 ORDER BY sold_amount DESC";
+			using (var connection = new SqlConnection(_connectionString))
+			{
+				return await connection.QueryAsync(query, new
+				{
+					CategoryName = category.category_name,
+				});
+			}
+        }
+
         public async Task<Category> GetCategoryByNumberAsync(int number)
 		{
 			string query = @"SELECT * 

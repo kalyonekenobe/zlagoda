@@ -9,6 +9,7 @@ namespace Zlagoda.Business.Interfaces
 		Task<Category> DeleteCategoryAsync(Category category);
 		Task<IEnumerable<Category>> GetAllCategoriesOrderedByNameAsync();
 		Task<IEnumerable<Category>> GetAllCategoriesWithStoreProductsNumberAsync();
+		Task<IEnumerable<dynamic>> GetAllCategorySoldProductsOrderedByDesc(Category category);
 		Task<Category> GetCategoryByNumberAsync(int number);
 	}
 }

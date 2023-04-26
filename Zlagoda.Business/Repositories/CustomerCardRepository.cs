@@ -73,7 +73,40 @@ namespace Zlagoda.Business.Repositories
 			}
 		}
 
-		public async Task<IEnumerable<CustomerCard>> GetAllCustomerCardsWithCertainDiscountPercentOrderedBySurnameAsync(int percent)
+        public async Task<IEnumerable<CustomerCard>> GetAllCustomerCardsWhoBoughtAllProductsBoughtByClientsWithSurnameAsync(string surname)
+        {
+			string query = @"SELECT * 
+							 FROM Customer_Card CC 
+							 WHERE NOT EXISTS(SELECT Cust.* 
+											  FROM Sale S 
+											  INNER JOIN [Check] C 
+											  ON C.check_number=S.check_number 
+											  INNER JOIN Customer_Card Cust 
+											  ON Cust.card_number=C.card_number
+											  WHERE Cust.cust_surname=@CustSurname
+											  AND UPC NOT IN(SELECT UPC 
+															 FROM Sale SS
+															 INNER JOIN [Check] CCC 
+															 ON CCC.check_number=SS.check_number 
+															 INNER JOIN Customer_Card CustС 
+															 ON CustС.card_number=CCC.card_number 
+															 WHERE CustС.card_number=CC.card_number 
+															) 
+											 )
+							 AND EXISTS (SELECT * 
+										 FROM Customer_Card
+									     WHERE cust_surname=@CustSurname 
+										)";
+			using (var connection = new SqlConnection(_connectionString))
+			{
+				return await connection.QueryAsync<CustomerCard>(query, new
+				{
+					CustSurname = surname,
+				});
+			}
+		}
+
+        public async Task<IEnumerable<CustomerCard>> GetAllCustomerCardsWithCertainDiscountPercentOrderedBySurnameAsync(int percent)
 		{
 			string query = @"SELECT * 
 							 FROM Customer_Card 

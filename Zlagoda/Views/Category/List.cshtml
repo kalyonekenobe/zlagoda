@@ -67,6 +67,7 @@
                     {
                         <th scope="col" width="100%" style="min-width: 500px;">Кількість товарів в магазині</th>
                     }
+                    <th scope="col" style="min-width: 135px;" class="noprint">Детальніше</th>
                     <th scope="col" style="min-width: 130px;" class="noprint">Редагувати</th>
                     <th scope="col" style="min-width: 120px;" class="noprint">Видалити</th>
                 </tr>
@@ -81,6 +82,12 @@
                         {
                             <td scope="col" width="50%">@category.store_products_number</td>
                         }
+                        <td class="noprint">
+                            <a class="btn btn-sm btn-outline-dark" asp-action="Details" asp-route-id="@category.category_number">
+                                <i class="fa-solid fa-circle-info me-2"></i>
+                                Детальніше
+                            </a>
+                        </td>
                         <td class="noprint">
                             <a class="btn btn-sm btn-outline-primary edit-delete-btn" asp-action="Edit" asp-route-id="@category.category_number">
                                 <i class="fa-solid fa-pen-to-square me-2"></i>
