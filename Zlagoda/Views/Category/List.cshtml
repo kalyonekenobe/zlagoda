@@ -24,8 +24,31 @@
             <a asp-action="Index" asp-controller="Home" class="btn btn-sm btn-secondary" style="min-width: 100px;">Назад</a>
         </div>
     </div>
-    <div class="row justify-content-end">
-        <div class="col-12" style="text-align: end">
+    <div class="row justify-content-end align-items-end">
+        <div class="search-container col-12 col-md-6">
+            <div class="dropdown col-2 me-2 w-100" style="max-width: 300px;">
+                <label>Список категорій</label>
+                <br>
+                <div class="btn-group w-100">
+                    <button class="btn btn-sm dropdown-toggle page-buttons" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @(Context.Request.Query["list"] == "expanded" ? "Розширений" : "Звичайний")
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" asp-route-list="">
+                                Звичайний
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" asp-route-list="expanded">
+                                Розширений
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6" style="text-align: end">
             <!-- buttons -->
             <a class="btn btn-sm btn-outline-dark page-buttons" asp-action="Create">Додати категорію</a>
             <a class="btn btn-sm btn-outline-dark page-buttons" id="print-categories">Друк списку категорій</a>
@@ -39,21 +62,25 @@
             <thead>
                 <tr>
                     <th scope="col" style="min-width: 150px;">ID категорії</th>
-                    <th scope="col" width="100%">Назва</th>
+                    <th scope="col" width="100%" style="min-width: 200px;">Назва</th>
+                    @if (Context.Request.Query["list"] == "expanded")
+                    {
+                        <th scope="col" width="100%" style="min-width: 500px;">Кількість товарів в магазині</th>
+                    }
                     <th scope="col" style="min-width: 130px;" class="noprint">Редагувати</th>
                     <th scope="col" style="min-width: 120px;" class="noprint">Видалити</th>
                 </tr>
             </thead>
             <tbody>
-                @{
-                    var number = 0;
-                }
                 @foreach (Category category in Model.Categories)
                 {
-                    number++;
                     <tr>
                         <td>@category.category_number</td>
                         <td>@category.category_name</td>
+                        @if (Context.Request.Query["list"] == "expanded")
+                        {
+                            <td scope="col" width="50%">@category.store_products_number</td>
+                        }
                         <td class="noprint">
                             <a class="btn btn-sm btn-outline-primary edit-delete-btn" asp-action="Edit" asp-route-id="@category.category_number">
                                 <i class="fa-solid fa-pen-to-square me-2"></i>

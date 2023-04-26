@@ -29,7 +29,10 @@
     <div class="row mb-3">
         <div class="col d-flex justify-content-between align-items-center flex-nowrap">
             <h4 class="text-start w-100">Список чеків</h4>
-            <a asp-action="Index" asp-controller="Home" class="btn btn-sm btn-secondary" style="min-width: 100px;">Назад</a>
+            <div class="d-flex">
+                <a asp-action="DetailedList" class="btn btn-sm btn-primary me-2" style="min-width: 120px;">Додатково</a>
+                <a asp-action="Index" asp-controller="Home" class="btn btn-sm btn-secondary" style="min-width: 100px;">Назад</a>
+            </div>
         </div>
     </div>
     <div class="row justify-content-between align-items-end noprint">

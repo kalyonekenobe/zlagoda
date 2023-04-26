@@ -16,7 +16,11 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<CustomerCard> CreateCustomerCardAsync(CustomerCard customerCard)
 		{
-			string query = @"INSERT INTO Customer_Card (card_number, cust_surname, cust_name, cust_patronymic, phone_number, city, street, zip_code, [percent]) VALUES (@CardNumber, @CustSurname, @CustName, @CustPatronymic, @PhoneNumber, @City, @Street, @ZipCode, @Percent)";
+			string query = @"INSERT 
+							 INTO Customer_Card 
+							 (card_number, cust_surname, cust_name, cust_patronymic, phone_number, city, street, zip_code, [percent]) 
+							 VALUES 
+							 (@CardNumber, @CustSurname, @CustName, @CustPatronymic, @PhoneNumber, @City, @Street, @ZipCode, @Percent)";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				int affectedRows = await connection.ExecuteAsync(query, new
@@ -41,7 +45,9 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<CustomerCard> DeleteCustomerCardAsync(CustomerCard customerCard)
 		{
-			string query = @"DELETE FROM Customer_Card WHERE card_number=@CardNumber";
+			string query = @"DELETE 
+							 FROM Customer_Card 
+							 WHERE card_number=@CardNumber";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				int affectedRows = await connection.ExecuteAsync(query, new
@@ -58,7 +64,9 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<IEnumerable<CustomerCard>> GetAllCustomerCardsOrderedBySurnameAsync()
 		{
-			string query = @"SELECT * FROM Customer_Card ORDER BY cust_surname ASC";
+			string query = @"SELECT * 
+							 FROM Customer_Card 
+							 ORDER BY cust_surname ASC";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				return await connection.QueryAsync<CustomerCard>(query);
@@ -67,7 +75,10 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<IEnumerable<CustomerCard>> GetAllCustomerCardsWithCertainDiscountPercentOrderedBySurnameAsync(int percent)
 		{
-			string query = @"SELECT * FROM Customer_Card WHERE [percent]=@Percent ORDER BY cust_surname ASC";
+			string query = @"SELECT * 
+							 FROM Customer_Card 
+							 WHERE [percent]=@Percent 
+							 ORDER BY cust_surname ASC";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				return await connection.QueryAsync<CustomerCard>(query, new
@@ -79,7 +90,9 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<CustomerCard> GetCustomerCardByNumberAsync(string number)
 		{
-			string query = @"SELECT * FROM Customer_Card WHERE card_number=@CardNumber";
+			string query = @"SELECT * 
+							 FROM Customer_Card 
+							 WHERE card_number=@CardNumber";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				var customerCard = await connection.QueryFirstOrDefaultAsync<CustomerCard>(query, new
@@ -96,7 +109,9 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<IEnumerable<CustomerCard>> GetCustomerCardsBySurnameAsync(string surname)
 		{
-			string query = @"SELECT * FROM Customer_Card WHERE cust_surname=@CustSurname";
+			string query = @"SELECT * 
+							 FROM Customer_Card 
+							 WHERE cust_surname=@CustSurname";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				return await connection.QueryAsync<CustomerCard>(query, new
@@ -108,7 +123,11 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<CustomerCard> UpdateCustomerCardAsync(CustomerCard customerCard)
 		{
-			string query = @"UPDATE Customer_Card SET cust_surname=@CustSurname, cust_name=@CustName, cust_patronymic=@CustPatronymic, phone_number=@PhoneNumber, city=@City, street=@Street, zip_code=@ZipCode, [percent]=@Percent WHERE card_number=@CardNumber";
+			string query = @"UPDATE Customer_Card 
+							 SET cust_surname=@CustSurname, cust_name=@CustName, cust_patronymic=@CustPatronymic, 
+							 phone_number=@PhoneNumber, city=@City, street=@Street, zip_code=@ZipCode, 
+							 [percent]=@Percent 
+							 WHERE card_number=@CardNumber";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				int affectedRows = await connection.ExecuteAsync(query, new

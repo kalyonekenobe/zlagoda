@@ -2,7 +2,6 @@
 using Zlagoda.Attributes;
 using Zlagoda.Business.Entities;
 using Zlagoda.Business.Interfaces;
-using Zlagoda.Business.Repositories;
 using Zlagoda.Enums;
 using Zlagoda.Models;
 
@@ -20,9 +19,17 @@ namespace Zlagoda.Controllers
         [Route("categories")]
         [Route("categories/list")]
         [JwtAuthorize(Role = nameof(UserRoles.Manager))]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([FromQuery(Name = "list")] string? list = null)
         {
-            var categories = await _categoryRepository.GetAllCategoriesOrderedByNameAsync();
+            IEnumerable<Category> categories;
+            if (list is null)
+            {
+                categories = await _categoryRepository.GetAllCategoriesOrderedByNameAsync();
+            }
+            else
+            {
+                categories = await _categoryRepository.GetAllCategoriesWithStoreProductsNumberAsync();
+            }
             var model = new
             {
                 Title = "Categories",

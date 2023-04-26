@@ -489,7 +489,9 @@ namespace Zlagoda.Business.Repositories
 
         private async Task<bool> CanCreateStoreProduct(StoreProduct storeProduct)
         {
-            string query = @"(SELECT COUNT(*) FROM Store_Product WHERE id_product=@IdProduct AND promotional_product=@PromotionalProduct)";
+            string query = @"SELECT COUNT(*) as product_count
+                             FROM Store_Product 
+                             WHERE id_product=@IdProduct AND promotional_product=@PromotionalProduct";
             using (var connection = new SqlConnection(_connectionString))
             {
                 var result = await connection.ExecuteScalarAsync<int>(query, new

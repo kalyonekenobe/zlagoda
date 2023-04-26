@@ -10,6 +10,7 @@ namespace Zlagoda.Business.Interfaces
 		Task<IEnumerable<Check>> GetAllChecksCreatedByCertainCashierDuringPeriodAsync(Employee employee, DateTime startDate, DateTime endDate);
 		Task<IEnumerable<Check>> GetAllChecksCreatedByCertainCashierOnDateAsync(Employee employee, DateTime date);
 		Task<IEnumerable<Check>> GetAllChecksCreatedByAllCashiersDuringPeriodAsync(DateTime startDate, DateTime endDate);
+		Task<IEnumerable<Check>> GetAllChecksWhichHasStoreProductsCategoriesFruitsAndVegetablesCreatedByCashierSurnameAsync(string surname);
 		Task<Check> GetCheckByNumberAsync(string number);
 	}
 }

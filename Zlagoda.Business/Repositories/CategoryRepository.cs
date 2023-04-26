@@ -16,7 +16,11 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<Category> CreateCategoryAsync(Category category)
 		{
-			string query = @"INSERT INTO Category (category_number, category_name) VALUES (@CategoryNumber, @CategoryName)";
+			string query = @"INSERT 
+							 INTO Category 
+							 (category_number, category_name) 
+							 VALUES 
+							 (@CategoryNumber, @CategoryName)";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				int affectedRows = await connection.ExecuteAsync(query, new
@@ -34,7 +38,9 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<Category> DeleteCategoryAsync(Category category)
 		{
-			string query = @"DELETE FROM Category WHERE category_number=@CategoryNumber";
+			string query = @"DELETE 
+							 FROM Category 
+							 WHERE category_number=@CategoryNumber";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				int affectedRows = await connection.ExecuteAsync(query, new
@@ -51,16 +57,42 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<IEnumerable<Category>> GetAllCategoriesOrderedByNameAsync()
 		{
-			string query = @"SELECT * FROM Category ORDER BY category_name ASC";
+			string query = @"SELECT * 
+							 FROM Category 
+							 ORDER BY category_name ASC";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				return await connection.QueryAsync<Category>(query);
 			}
 		}
 
-		public async Task<Category> GetCategoryByNumberAsync(int number)
+        public async Task<IEnumerable<Category>> GetAllCategoriesWithStoreProductsNumberAsync()
+        {
+			string query = @"SELECT C.category_number, C.category_name, 
+							 SUM(
+								 CASE 
+									WHEN SP.products_number IS NULL THEN 0 
+									ELSE SP.products_number 
+							     END
+							 ) as store_products_number
+							 FROM Category C
+							 LEFT JOIN Product P
+							 ON P.category_number=C.category_number
+							 LEFT JOIN Store_Product SP
+							 ON P.id_product=SP.id_product
+							 GROUP BY C.category_number, C.category_name
+							 ORDER BY C.category_name";
+			using (var connection = new SqlConnection(_connectionString))
+			{
+				return await connection.QueryAsync<Category>(query);
+			}
+        }
+
+        public async Task<Category> GetCategoryByNumberAsync(int number)
 		{
-			string query = @"SELECT * FROM Category WHERE category_number=@CategoryNumber";
+			string query = @"SELECT * 
+							 FROM Category 
+							 WHERE category_number=@CategoryNumber";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				var category = await connection.QueryFirstOrDefaultAsync<Category>(query, new
@@ -77,7 +109,9 @@ namespace Zlagoda.Business.Repositories
 
 		public async Task<Category> UpdateCategoryAsync(Category category)
 		{
-			string query = @"UPDATE Category SET category_name=@CategoryName WHERE category_number=@CategoryNumber";
+			string query = @"UPDATE Category 
+							 SET category_name=@CategoryName 
+							 WHERE category_number=@CategoryNumber";
 			using (var connection = new SqlConnection(_connectionString))
 			{
 				int affectedRows = await connection.ExecuteAsync(query, new

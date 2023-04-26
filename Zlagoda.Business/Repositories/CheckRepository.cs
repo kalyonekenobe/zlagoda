@@ -271,6 +271,42 @@ namespace Zlagoda.Business.Repositories
             }
         }
 
+        public async Task<IEnumerable<Check>> GetAllChecksWhichHasStoreProductsCategoriesFruitsAndVegetablesCreatedByCashierSurnameAsync(string surname)
+        {
+            string query = @"SELECT *
+                             FROM [Check] C
+                             WHERE NOT EXISTS (SELECT *
+		                                       FROM Category Cat
+		                                       WHERE category_number IN (SELECT category_number
+                                                                         FROM Category
+                                                                         WHERE category_name IN ('Овочі', 'Фрукти')
+                                                                        )
+                                               AND NOT EXISTS (SELECT * 
+				                                               FROM Sale S
+				                                               INNER JOIN Store_Product SP
+				                                               ON S.UPC=SP.UPC
+				                                               INNER JOIN Product P
+				                                               ON SP.id_product=P.id_product
+				                                               INNER JOIN Category SP_C
+				                                               ON P.category_number=SP_C.category_number
+				                                               WHERE S.check_number=C.check_number
+				                                               AND SP_C.category_number=Cat.category_number
+                                                              )
+		                                      )
+                             AND id_employee IN (SELECT id_employee
+	    	                                     FROM Employee
+	                                             WHERE empl_role='Cashier'
+	  	                                         AND empl_surname=@EmplSurname
+                                                )";
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                return await connection.QueryAsync<Check>(query, new
+                {
+                    EmplSurname = surname,
+                });
+            }
+        }
+
         public async Task<Check> GetCheckByNumberAsync(string number)
         {
             string query = @"SELECT C.*,
